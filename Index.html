@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>تسبيح - سبحان الله وبحمده | عداد حديث مع ارتجاج</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome 6 (للأيقونات المساعدة فقط، لا توجد أيقونة يد في العداد) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none; /* منع تحديد النص */
+        }
+
+        body {
+            background: linear-gradient(145deg, #0f3127 0%, #195e45 100%);
+            min-height: 100vh;
+            font-family: 'Cairo', 'Inter', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* بطاقة التطبيق الرئيسية */
+        .tasbeeh-card {
+            max-width: 680px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.97);
+            border-radius: 64px 48px 64px 48px;
+            box-shadow: 0 35px 50px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(255, 245, 200, 0.5) inset;
+            overflow: hidden;
+            transition: transform 0.2s ease;
+            backdrop-filter: blur(1px);
+        }
+
+        .tasbeeh-card:hover {
+            transform: scale(1.01);
+        }
+
+        /* الرأس */
+        .header {
+            background: #fef7e8;
+            padding: 22px 28px 18px;
+            text-align: center;
+            border-bottom: 2px solid #ebddbb;
+        }
+
+        .header h1 {
+            font-size: 1.9rem;
+            font-weight: 800;
+            color: #2a6b42;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .header h1 i {
+            font-size: 2rem;
+            color: #d9a13b;
+        }
+
+        .hadith-badge {
+            background: #efe3c7;
+            border-radius: 60px;
+            padding: 9px 20px;
+            margin-top: 14px;
+            font-size: 0.92rem;
+            font-weight: 600;
+            color: #3b2c1a;
+            display: inline-block;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+            line-height: 1.4;
+        }
+
+        /* منطقة العداد الضخم - بدون أيقونة يد */
+        .dhikr-area {
+            display: flex;
+            justify-content: center;
+            padding: 45px 20px 30px;
+            background: #fffbf2;
+        }
+
+        .counter-btn {
+            background: radial-gradient(circle at 35% 25%, #2f9e6b, #1b784b);
+            border: none;
+            width: 270px;
+            height: 270px;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 22px 38px rgba(0, 0, 0, 0.35), 0 0 0 10px rgba(253, 216, 116, 0.6), 0 0 0 15px rgba(110, 70, 25, 0.15);
+            transition: all 0.08s linear;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: white;
+            text-align: center;
+        }
+
+        .counter-btn:active {
+            transform: scale(0.96);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4), 0 0 0 8px rgba(255, 225, 120, 0.8);
+        }
+
+        /* عرض الرقم فقط (بدون أيقونة يد) */
+        .count-number {
+            font-size: 5rem;
+            font-weight: 800;
+            font-family: 'Inter', 'Cairo', monospace;
+            letter-spacing: 6px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 10px 22px;
+            border-radius: 70px;
+            backdrop-filter: blur(4px);
+            line-height: 1.2;
+        }
+
+        .count-label {
+            font-size: 1.3rem;
+            font-weight: 600;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 6px 20px;
+            border-radius: 40px;
+            margin-top: 5px;
+            letter-spacing: 1px;
+        }
+
+        /* أزرار التحكم */
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            padding: 15px 20px 25px;
+            background: #fffbf2;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .ctrl-btn {
+            font-family: 'Cairo', sans-serif;
+            background: #f3e8d8;
+            border: none;
+            padding: 10px 26px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #326e48;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.05);
+        }
+
+        .ctrl-btn i {
+            font-size: 1rem;
+        }
+
+        .ctrl-btn.reset-btn {
+            background: #ecdbba;
+            color: #a5662a;
+        }
+
+        .ctrl-btn.reset-btn:hover {
+            background: #e2cfb0;
+            transform: translateY(-2px);
+        }
+
+        .ctrl-btn:hover {
+            background: #fff1e0;
+            transform: translateY(-2px);
+        }
+
+        .goal-badge {
+            background: #dff0e3;
+            padding: 8px 24px;
+            border-radius: 50px;
+            font-weight: 700;
+            color: #236b47;
+            font-size: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* قسم الفوائد والأحكام */
+        .benefits {
+            background: #fefaf2;
+            padding: 24px 28px 32px;
+            border-top: 1px solid #efe0ca;
+            border-radius: 0 0 48px 48px;
+        }
+
+        .benefits-title {
+            font-size: 1.55rem;
+            font-weight: 800;
+            color: #bc752e;
+            border-right: 6px solid #dcb45a;
+            padding-right: 18px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .grid-benefits {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 18px;
+            margin-bottom: 28px;
+        }
+
+        .benefit-card {
+            background: #ffffffdb;
+            padding: 16px 18px;
+            border-radius: 34px;
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.03);
+            transition: all 0.2s;
+            border: 1px solid #f1e2cc;
+            backdrop-filter: blur(2px);
+        }
+
+        .benefit-card i {
+            font-size: 1.6rem;
+            color: #d9a942;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+
+        .benefit-card strong {
+            font-size: 1.05rem;
+            color: #2a764a;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .benefit-card p {
+            font-size: 0.9rem;
+            color: #534b38;
+            line-height: 1.45;
+        }
+
+        .dhikr-formula {
+            background: #eaf2e2;
+            padding: 16px 22px;
+            border-radius: 44px;
+            text-align: center;
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: #2c633f;
+        }
+
+        .dhikr-formula span {
+            font-family: 'Inter', monospace;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        footer {
+            text-align: center;
+            font-size: 0.7rem;
+            background: #fffbf2;
+            padding: 14px;
+            color: #7e694c;
+            border-top: 1px solid #ede2cf;
+        }
+
+        @media (max-width: 550px) {
+            .counter-btn {
+                width: 210px;
+                height: 210px;
+            }
+            .count-number {
+                font-size: 3.6rem;
+                padding: 6px 14px;
+                letter-spacing: 3px;
+            }
+            .count-label {
+                font-size: 1.1rem;
+            }
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            .benefits-title {
+                font-size: 1.3rem;
+            }
+        }
+
+        /* تأثير وميض بسيط عند اكتمال ربع */
+        @keyframes quarterFlash {
+            0% { background: radial-gradient(circle at 35% 25%, #f5bc70, #e59942); box-shadow: 0 0 0 12px #ffdd99; }
+            100% { background: radial-gradient(circle at 35% 25%, #2f9e6b, #1b784b); box-shadow: 0 22px 38px rgba(0, 0, 0, 0.35), 0 0 0 10px rgba(253, 216, 116, 0.6); }
+        }
+
+        .quarter-effect {
+            animation: quarterFlash 0.35s ease-out;
+        }
+    </style>
+</head>
+<body>
+
+<div class="tasbeeh-card">
+    <div class="header">
+        <h1>
+            <i class="fas fa-tasbih"></i> 
+            عداد التسبيح اليومي
+            <i class="fas fa-seedling"></i>
+        </h1>
+        <div class="hadith-badge">
+            <i class="fas fa-hadith"></i> حديث صحيح: «مَنْ قَالَ سُبْحَانَ اللَّهِ وَبِحَمْدِهِ فِي يَوْمٍ مِائَةَ مَرَّةٍ غُفِرَتْ ذُنُوبُهُ وَلَوْ كَانَتْ مِثْلَ زَبَدِ الْبَحْرِ»
+        </div>
+    </div>
+
+    <div class="dhikr-area">
+        <button class="counter-btn" id="dhikrButton" aria-label="تسبيحة">
+            <!-- تم إزالة أيقونة اليد تمامًا، فقط العدد والنص -->
+            <div class="count-number" id="countDisplay">0</div>
+            <div class="count-label">مرة</div>
+        </button>
+    </div>
+
+    <div class="controls">
+        <button class="ctrl-btn reset-btn" id="resetBtn">
+            <i class="fas fa-undo-alt"></i> إعادة ضبط
+        </button>
+        <div class="goal-badge">
+            <i class="fas fa-bullseye"></i> الهدف: 100 تسبيحة
+        </div>
+    </div>
+
+    <div class="benefits">
+        <div class="benefits-title">
+            <i class="fas fa-star-of-life"></i> 
+            فوائد وأحكام الذكر العظيم
+        </div>
+        <div class="grid-benefits">
+            <div class="benefit-card">
+                <i class="fas fa-water"></i>
+                <strong>غفران الذنوب</strong>
+                <p>تُغفر صغائر الذنوب وإن كانت كثيرة كزبد البحر، فضلاً من الله.</p>
+            </div>
+            <div class="benefit-card">
+                <i class="fas fa-clock"></i>
+                <strong>الوقت المفضل</strong>
+                <p>يُقال في اليوم، والأفضل تكراره مائة مرة في الصباح ومائة في المساء.</p>
+            </div>
+            <div class="benefit-card">
+                <i class="fas fa-shield-alt"></i>
+                <strong>حرز من الشيطان</strong>
+                <p>يكون حصناً للمسلم من الشيطان في يومه، ويبارك الله في وقته.</p>
+            </div>
+            <div class="benefit-card">
+                <i class="fas fa-gem"></i>
+                <strong>أجر عظيم</strong>
+                <p>لم يأتِ أحد بمثل ما جاء به إلا من زاد عليه، كنز من الحسنات.</p>
+            </div>
+        </div>
+
+        <div class="dhikr-formula">
+            <i class="fas fa-quran"></i> صيغة الذكر الأساسية: 
+            <span>«سُبْحَانَ اللَّهِ وَبِحَمْدِهِ»</span> مائة مرة يومياً.
+            <br>
+            <span style="font-size:0.85rem;">وصيغة أخرى: «سُبْحَانَ اللَّهِ وَبِحَمْدِهِ، سُبْحَانَ اللَّهِ الْعَظِيمِ»</span>
+        </div>
+    </div>
+    <footer>
+        <i class="fas fa-heart" style="color:#d4a13e;"></i> التسبيح نور — سبحان الله وبحمده عدد خلقه ورضا نفسه وزنة عرشه
+    </footer>
+</div>
+
+<script>
+    (function() {
+        // === مفاتيح التخزين المحلي ===
+        const STORAGE_KEY = 'tasbeeh_count_daily_v2';
+        const LAST_DATE_KEY = 'tasbeeh_last_date_v2';
+        
+        // عناصر DOM
+        const countDisplay = document.getElementById('countDisplay');
+        const dhikrButton = document.getElementById('dhikrButton');
+        const resetBtn = document.getElementById('resetBtn');
+        
+        let currentCount = 0;
+        
+        // مُتغير لتتبع آخر ربع تم الوصول إليه لمنع الاهتزاز المتكرر لنفس الربع
+        let lastQuarterNotified = -1;   // القيم: 0,1,2,3,4 (25,50,75,100) - نستخدمها عند الاكتمال
+        
+        // الحصول على تاريخ اليوم بصيغة YYYY-MM-DD
+        function getTodayDate() {
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+        
+        // حفظ العدد في localStorage مع التاريخ
+        function saveCount(count) {
+            localStorage.setItem(STORAGE_KEY, count.toString());
+            localStorage.setItem(LAST_DATE_KEY, getTodayDate());
+        }
+        
+        // تحميل العدد حسب اليوم
+        function loadCount() {
+            const savedDate = localStorage.getItem(LAST_DATE_KEY);
+            const today = getTodayDate();
+            if (savedDate !== today) {
+                // يوم جديد: البدء من الصفر
+                currentCount = 0;
+                saveCount(0);
+                lastQuarterNotified = -1;
+            } else {
+                const savedCount = localStorage.getItem(STORAGE_KEY);
+                if (savedCount !== null && !isNaN(parseInt(savedCount))) {
+                    currentCount = parseInt(savedCount);
+                } else {
+                    currentCount = 0;
+                }
+                // تحديث الحالة بناءً على العدد الحالي: آخر ربع تم الوصول إليه
+                updateQuarterNotifyState();
+            }
+            updateDisplay();
+            checkFullGoalCompletion();  // فحص الـ100 لأغراض الإشعار (مرة واحدة)
+        }
+        
+        // تحديث lastQuarterNotified بناءً على currentCount (للتأكد من عدم التكرار بعد التحميل)
+        function updateQuarterNotifyState() {
+            const quarter = Math.floor(currentCount / 25);
+            if (currentCount >= 25 && quarter >= 1) {
+                // نضبط آخر ربع تم إشعاره على أعلى ربع مكتمل حسب العدد الحالي
+                let completedQuarter = Math.floor(currentCount / 25);
+                if (currentCount % 25 === 0 && currentCount !== 0) {
+                    // إذا كان العدد مضاعف 25 بالضبط، نعتبر الربع قد اكتمل في هذه النقطة
+                    lastQuarterNotified = completedQuarter;
+                } else if (completedQuarter > 0) {
+                    // إذا تجاوز ربعاً دون اكتمال مضبوط، نعتبر آخر ربع تم إشعاره هو completedQuarter - 1
+                    // لكن لتجنب إعادة الاهتزاز، نضع lastQuarterNotified = completedQuarter - 1
+                    lastQuarterNotified = completedQuarter - 1;
+                } else {
+                    lastQuarterNotified = -1;
+                }
+            } else {
+                // أقل من 25
+                if (currentCount < 25) lastQuarterNotified = -1;
+                else if (currentCount >= 100) lastQuarterNotified = 4;
+            }
+            // حالة خاصة: إذا كان العدد 100 بالضبط ولم ينبه لأخر ربع
+            if (currentCount === 100 && lastQuarterNotified !== 4) {
+                lastQuarterNotified = 4;
+            }
+        }
+        
+        // دالة الاهتزاز (vibration) المدعومة في المتصفحات الحديثة
+        function vibrateDevice(duration = 80) {
+            if (window.navigator && window.navigator.vibrate) {
+                window.navigator.vibrate(duration);
+            }
+        }
+        
+        // إضافة تأثير وميض على الزر عند إكمال ربع
+        function applyQuarterFlash() {
+            const btn = dhikrButton;
+            btn.classList.add('quarter-effect');
+            setTimeout(() => {
+                btn.classList.remove('quarter-effect');
+            }, 380);
+        }
+        
+        // فحص ومعالجة إكمال ربع (كل 25 تسبيحة)
+        // تعيد true إذا تم الاحتفال بربع جديد
+        function handleQuarterCompletion(newCount) {
+            // الأرباع: 25 , 50 , 75 , 100
+            if (newCount === 0) return false;
+            const quarterValue = [25, 50, 75, 100];
+            for (let i = 0; i < quarterValue.length; i++) {
+                const quarterNum = quarterValue[i];
+                const quarterIndex = i + 1;  // 1,2,3,4
+                if (newCount === quarterNum && lastQuarterNotified !== quarterIndex) {
+                    // تم الوصول إلى ربع جديد تماماً
+                    lastQuarterNotified = quarterIndex;
+                    // إحداث اهتزاز قوي (150ms) لطيف عند اكتمال الربع
+                    vibrateDevice(180);
+                    // إضافة وميض بصري جميل
+                    applyQuarterFlash();
+                    // إضافة رسالة في console (اختياري) لإظهار التهنئة
+                    console.log(`🎉 مبارك: أتممت ${quarterNum} تسبيحة - سبحان الله!`);
+                    // إشعار صغير للمتصفح إذا أذن المستخدم (اختياري لكن مفيد)
+                    if (Notification.permission === "granted") {
+                        new Notification(`✨ إنجاز ✨`, {
+                            body: `أكملت ${quarterNum} تسبيحة من «سبحان الله وبحمده» ، بارك الله فيك`,
+                            silent: false,
+                        });
+                    } else if (Notification.permission !== "denied" && quarterNum === 100) {
+                        // نطلب الإذن عند بلوغ 100 إذا لم يكن ممنوحاً
+                        Notification.requestPermission();
+                    }
+                    return true;
+                }
+            }
+            return false;
+        }
+        
+        // فحص اكتمال الـ100 (لإشعار خاص) ولكن يمكن أن يتداخل مع الربع الرابع، لكننا نتأكد من التنبيه الفريد
+        let fullGoalNotified = false;
+        function checkFullGoalCompletion() {
+            if (currentCount >= 100 && !fullGoalNotified) {
+                fullGoalNotified = true;
+                // اهتزاز إضافي طويل قليلاً عند اكتمال الـ100 (ولكنه تم في الربع الرابع أيضاً، نتجنب التكرار)
+                // إذا لم يتم الاهتزاز سابقاً من نفس النقطة، نضمنه
+                if (lastQuarterNotified !== 4) {
+                    vibrateDevice(200);
+                    applyQuarterFlash();
+                    lastQuarterNotified = 4;
+                }
+                // إشعار متصفح
+                if (Notification.permission === "granted") {
+                    new Notification("🌿 الحمد لله 🌿", {
+                        body: "أتممت 100 تسبيحة: سُبْحَانَ اللَّهِ وَبِحَمْدِهِ, غفر الله ذنوبك وإن كانت مثل زبد البحر.",
+                        icon: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle fill='%232a8b5c' cx='50' cy='50' r='45'/%3E%3Ctext x='50' y='67' font-size='40' text-anchor='middle' fill='white' font-family='monospace'%3E﴿%3C/text%3E%3C/svg%3E"
+                    });
+                } else if (Notification.permission !== "denied") {
+                    Notification.requestPermission();
+                }
+            } else if (currentCount < 100) {
+                fullGoalNotified = false;
+            }
+        }
+        
+        // تحديث واجهة العدد
+        function updateDisplay() {
+            countDisplay.innerText = currentCount;
+        }
+        
+        // دالة الزيادة الرئيسية
+        function incrementCount() {
+            // الحد الأقصى رمزي 1000 (للتجربة دون تجاوز)
+            if (currentCount >= 5000) {
+                alert("🌹 سبحان الله العظيم، العدد كبير جداً. يمكنك إعادة الضبط لمتابعة الذكر.");
+                return;
+            }
+            
+            const newCount = currentCount + 1;
+            currentCount = newCount;
+            saveCount(currentCount);
+            updateDisplay();
+            
+            // 1. التحقق من اكتمال ربع (25,50,75,100) 
+            handleQuarterCompletion(currentCount);
+            
+            // 2. التحقق من اكتمال الـ100 كهدف عام (يتم داخله منع الازدواجية)
+            checkFullGoalCompletion();
+            
+            // تأثير ضغط بسيط على الزر
+            const btn = dhikrButton;
+            btn.style.transform = "scale(0.96)";
+            setTimeout(() => { btn.style.transform = ""; }, 100);
+            
+            // إضافة اهتزاز لطيف جداً عند كل تسبيحة (اختياري لتحسين التجربة، يمكن تعطيله إذا أردت لكنه خفيف)
+            // ولكن لنجعل التجربة مريحة: كل تسبيحة اهتزاز خفيف 10ms (غير مزعج)
+            if (window.navigator && window.navigator.vibrate && currentCount % 2 === 0) {
+                // فقط نادراً لطيف
+                window.navigator.vibrate(8);
+            }
+        }
+        
+        // إعادة ضبط العدد إلى صفر مع تأكيد
+        function resetCounter() {
+            if (currentCount !== 0) {
+                const confirmReset = confirm("هل تريد إعادة ضبط عدد التسبيحات لليوم؟ سيبدأ العد من الصفر.");
+                if (!confirmReset) return;
+            }
+            currentCount = 0;
+            saveCount(0);
+            updateDisplay();
+            // إعادة تعيين متغيرات التتبع
+            lastQuarterNotified = -1;
+            fullGoalNotified = false;
+            // تأثير وميض بسيط لإعادة الضبط
+            const goalDiv = document.querySelector('.goal-badge');
+            goalDiv.style.backgroundColor = "#f3e1bc";
+            setTimeout(() => { goalDiv.style.backgroundColor = ""; }, 400);
+            // إعادة تعيين حالة الإشعارات الربعية
+            applyQuarterFlash(); // فقط تأثير بسيط ليس ربعاً
+            if (window.navigator && window.navigator.vibrate) {
+                window.navigator.vibrate(50);
+            }
+        }
+        
+        // طلب إذن الإشعارات بشكل غير مزعج عند وصول المستخدم إلى 30 تسبيحة
+        let notifRequested = false;
+        function gentleNotificationRequest() {
+            if (!notifRequested && Notification && Notification.permission === "default") {
+                if (currentCount >= 30) {
+                    Notification.requestPermission();
+                    notifRequested = true;
+                }
+            }
+        }
+        
+        // ربط الأحداث مع مراقبة الطلب اللطيف للإشعارات
+        const enhancedIncrement = function() {
+            incrementCount();
+            gentleNotificationRequest();
+        };
+        
+        const enhancedReset = function() {
+            resetCounter();
+        };
+        
+        dhikrButton.addEventListener('click', enhancedIncrement);
+        resetBtn.addEventListener('click', enhancedReset);
+        
+        // تحميل البيانات عند بدء التشغيل
+        loadCount();
+        
+        // مزامنة lastQuarterNotified بعد التحميل للتأكد من عدم فقدان الحالة
+        function syncStateAfterLoad() {
+            if (currentCount >= 25) {
+                const currentQuarter = Math.floor(currentCount / 25);
+                if (currentCount % 25 === 0) {
+                    lastQuarterNotified = currentQuarter;
+                } else {
+                    lastQuarterNotified = currentQuarter; 
+                    // اذا لم يكن مضاعفاً ولكننا تجاوزنا ربعاً سابقاً، نجعله يساوي currentQuarter حتى لا يعيد الاهتزاز
+                    if (currentQuarter > 0 && lastQuarterNotified > 0) {
+                        // لكن لكي لا يحدث اهتزاز مرة أخرى نضع lastQuarterNotified = currentQuarter (أي الربع الحالي غير المكتمل)
+                        // ولكن ربما لم يتم تنبيه الربع المكتمل، عند التحميل إذا كان العدد 26 مثلاً، الربع الأول 25 تم إنجازه، 
+                        // و lastQuarterNotified سيكون -1 سابقاً، نضبطه على 1 حتى لا يهتز مرة أخرى.
+                        if (currentCount > 25 && lastQuarterNotified < 1) lastQuarterNotified = 1;
+                        if (currentCount > 50 && lastQuarterNotified < 2) lastQuarterNotified = 2;
+                        if (currentCount > 75 && lastQuarterNotified < 3) lastQuarterNotified = 3;
+                        if (currentCount >= 100 && lastQuarterNotified < 4) lastQuarterNotified = 4;
+                    }
+                }
+            } else {
+                if (currentCount < 25) lastQuarterNotified = -1;
+            }
+            if (currentCount >= 100) fullGoalNotified = true;
+            else fullGoalNotified = false;
+        }
+        syncStateAfterLoad();
+        
+        // عند تحديث الصفحة نضمن عدم اهتزاز الأرباع السابقة
+        window.addEventListener('load', () => {
+            syncStateAfterLoad();
+            updateDisplay();
+        });
+    })();
+</script>
+</body>
+</html>
