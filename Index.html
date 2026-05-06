@@ -2,11 +2,12 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>تسبيح - سبحان الله وبحمده | عداد حديث مع ارتجاج</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <!-- منع الزوم عبر css و meta (viewport) مع إمكانية التحكم اليدوي -->
+    <title>تسبيح - سبحان الله وبحمده | عداد مع رجّة خفيفة ومنع الزوم</title>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Font Awesome 6 (للأيقونات المساعدة فقط، لا توجد أيقونة يد في العداد) -->
+    <!-- Font Awesome 6 (أيقونات مساعدة فقط، لا يد في العداد) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         * {
@@ -14,6 +15,8 @@
             padding: 0;
             box-sizing: border-box;
             user-select: none; /* منع تحديد النص */
+            /* منع أي تكبير/تصغير ناتج عن اللمس المزدوج عبر CSS */
+            touch-action: manipulation; /* يمنع zoom بالقدر المستطاع مع الحفاظ على التمرير */
         }
 
         body {
@@ -24,6 +27,8 @@
             justify-content: center;
             align-items: center;
             padding: 20px;
+            /* منع أي zoom إضافي */
+            touch-action: pan-x pan-y; /* يسمح بالتمرير فقط، يمنع pinch-zoom و double-tap zoom كلياً */
         }
 
         /* بطاقة التطبيق الرئيسية */
@@ -103,6 +108,7 @@
             gap: 8px;
             color: white;
             text-align: center;
+            touch-action: manipulation; /* تحسين اللمس */
         }
 
         .counter-btn:active {
@@ -159,6 +165,7 @@
             align-items: center;
             gap: 8px;
             box-shadow: 0 3px 8px rgba(0,0,0,0.05);
+            touch-action: manipulation;
         }
 
         .ctrl-btn i {
@@ -295,7 +302,7 @@
             }
         }
 
-        /* تأثير وميض بسيط عند اكتمال ربع */
+        /* تأثير وميض عند اكتمال ربع */
         @keyframes quarterFlash {
             0% { background: radial-gradient(circle at 35% 25%, #f5bc70, #e59942); box-shadow: 0 0 0 12px #ffdd99; }
             100% { background: radial-gradient(circle at 35% 25%, #2f9e6b, #1b784b); box-shadow: 0 22px 38px rgba(0, 0, 0, 0.35), 0 0 0 10px rgba(253, 216, 116, 0.6); }
@@ -379,9 +386,36 @@
 
 <script>
     (function() {
-        // === مفاتيح التخزين المحلي ===
-        const STORAGE_KEY = 'tasbeeh_count_daily_v2';
-        const LAST_DATE_KEY = 'tasbeeh_last_date_v2';
+        // ================== منع التكبير (zoom) عند النقر المزدوج على الشاشة ==================
+        // منع الحدث الافتراضي للنقر المزدوج على أي منطقة في الصفحة لمنع تكبير المتصفح
+        document.addEventListener('dblclick', function(e) {
+            e.preventDefault();
+            return false;
+        }, { passive: false });
+        
+        // أيضاً منع pinch zoom عبر إضافة مستمع touchmove مع منع تكبير اثناء اللمسات المتعددة
+        // لكن الحل الأساسي هو meta viewport مع user-scalable=no + touch-action على body،
+        // ونضيف حماية إضافية لمنع تغيير viewport scale.
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function(event) {
+            const now = Date.now();
+            if (now - lastTouchEnd <= 300) {
+                event.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, false);
+        
+        // منع حركة الـ zoom باللمسات المزدوجة أيضاً
+        document.addEventListener('touchstart', (event) => {
+            if (event.touches.length > 1) {
+                event.preventDefault();
+            }
+        }, { passive: false });
+        
+        // ================== منطق التسبيح والعداد ==================
+        // مفاتيح التخزين المحلي
+        const STORAGE_KEY = 'tasbeeh_count_daily_v3';
+        const LAST_DATE_KEY = 'tasbeeh_last_date_v3';
         
         // عناصر DOM
         const countDisplay = document.getElementById('countDisplay');
@@ -391,7 +425,8 @@
         let currentCount = 0;
         
         // مُتغير لتتبع آخر ربع تم الوصول إليه لمنع الاهتزاز المتكرر لنفس الربع
-        let lastQuarterNotified = -1;   // القيم: 0,1,2,3,4 (25,50,75,100) - نستخدمها عند الاكتمال
+        let lastQuarterNotified = -1;   // القيم: 1/2/3/4 للأرباع 25,50,75,100
+        let fullGoalNotified = false;
         
         // الحصول على تاريخ اليوم بصيغة YYYY-MM-DD
         function getTodayDate() {
@@ -413,10 +448,10 @@
             const savedDate = localStorage.getItem(LAST_DATE_KEY);
             const today = getTodayDate();
             if (savedDate !== today) {
-                // يوم جديد: البدء من الصفر
                 currentCount = 0;
                 saveCount(0);
                 lastQuarterNotified = -1;
+                fullGoalNotified = false;
             } else {
                 const savedCount = localStorage.getItem(STORAGE_KEY);
                 if (savedCount !== null && !isNaN(parseInt(savedCount))) {
@@ -424,42 +459,43 @@
                 } else {
                     currentCount = 0;
                 }
-                // تحديث الحالة بناءً على العدد الحالي: آخر ربع تم الوصول إليه
                 updateQuarterNotifyState();
+                if (currentCount >= 100) fullGoalNotified = true;
+                else fullGoalNotified = false;
             }
             updateDisplay();
-            checkFullGoalCompletion();  // فحص الـ100 لأغراض الإشعار (مرة واحدة)
         }
         
-        // تحديث lastQuarterNotified بناءً على currentCount (للتأكد من عدم التكرار بعد التحميل)
+        // تحديث lastQuarterNotified بناءً على currentCount (لتجنب الاهتزاز بعد التحميل)
         function updateQuarterNotifyState() {
-            const quarter = Math.floor(currentCount / 25);
-            if (currentCount >= 25 && quarter >= 1) {
-                // نضبط آخر ربع تم إشعاره على أعلى ربع مكتمل حسب العدد الحالي
-                let completedQuarter = Math.floor(currentCount / 25);
-                if (currentCount % 25 === 0 && currentCount !== 0) {
-                    // إذا كان العدد مضاعف 25 بالضبط، نعتبر الربع قد اكتمل في هذه النقطة
-                    lastQuarterNotified = completedQuarter;
-                } else if (completedQuarter > 0) {
-                    // إذا تجاوز ربعاً دون اكتمال مضبوط، نعتبر آخر ربع تم إشعاره هو completedQuarter - 1
-                    // لكن لتجنب إعادة الاهتزاز، نضع lastQuarterNotified = completedQuarter - 1
-                    lastQuarterNotified = completedQuarter - 1;
-                } else {
-                    lastQuarterNotified = -1;
-                }
-            } else {
-                // أقل من 25
-                if (currentCount < 25) lastQuarterNotified = -1;
-                else if (currentCount >= 100) lastQuarterNotified = 4;
-            }
-            // حالة خاصة: إذا كان العدد 100 بالضبط ولم ينبه لأخر ربع
-            if (currentCount === 100 && lastQuarterNotified !== 4) {
+            if (currentCount >= 100) {
                 lastQuarterNotified = 4;
+            } else if (currentCount >= 75) {
+                lastQuarterNotified = 3;
+            } else if (currentCount >= 50) {
+                lastQuarterNotified = 2;
+            } else if (currentCount >= 25) {
+                lastQuarterNotified = 1;
+            } else {
+                lastQuarterNotified = -1;
             }
+            // إذا كان العدد مضاعف 25 بالضبط وتم تحميل الصفحة، نعتبر الربع قد تم إشعاره سابقاً
+            if (currentCount === 25) lastQuarterNotified = 1;
+            if (currentCount === 50) lastQuarterNotified = 2;
+            if (currentCount === 75) lastQuarterNotified = 3;
+            if (currentCount === 100) lastQuarterNotified = 4;
         }
         
         // دالة الاهتزاز (vibration) المدعومة في المتصفحات الحديثة
-        function vibrateDevice(duration = 80) {
+        // هذه الرجة لكل نقرة (خفيفة)
+        function vibrateOnTap() {
+            if (window.navigator && window.navigator.vibrate) {
+                window.navigator.vibrate(12); // رجة خفيفة جداً بكل نقرة
+            }
+        }
+        
+        // رجة قوية عند إكمال ربع
+        function vibrateQuarter(duration = 90) {
             if (window.navigator && window.navigator.vibrate) {
                 window.navigator.vibrate(duration);
             }
@@ -475,31 +511,24 @@
         }
         
         // فحص ومعالجة إكمال ربع (كل 25 تسبيحة)
-        // تعيد true إذا تم الاحتفال بربع جديد
         function handleQuarterCompletion(newCount) {
-            // الأرباع: 25 , 50 , 75 , 100
             if (newCount === 0) return false;
             const quarterValue = [25, 50, 75, 100];
             for (let i = 0; i < quarterValue.length; i++) {
                 const quarterNum = quarterValue[i];
-                const quarterIndex = i + 1;  // 1,2,3,4
+                const quarterIndex = i + 1;
                 if (newCount === quarterNum && lastQuarterNotified !== quarterIndex) {
-                    // تم الوصول إلى ربع جديد تماماً
                     lastQuarterNotified = quarterIndex;
-                    // إحداث اهتزاز قوي (150ms) لطيف عند اكتمال الربع
-                    vibrateDevice(180);
-                    // إضافة وميض بصري جميل
+                    // رجة مميزة عند اكتمال الربع
+                    vibrateQuarter(110);
                     applyQuarterFlash();
-                    // إضافة رسالة في console (اختياري) لإظهار التهنئة
-                    console.log(`🎉 مبارك: أتممت ${quarterNum} تسبيحة - سبحان الله!`);
-                    // إشعار صغير للمتصفح إذا أذن المستخدم (اختياري لكن مفيد)
+                    // إشعار للمتصفح إذا أذن
                     if (Notification.permission === "granted") {
                         new Notification(`✨ إنجاز ✨`, {
                             body: `أكملت ${quarterNum} تسبيحة من «سبحان الله وبحمده» ، بارك الله فيك`,
                             silent: false,
                         });
                     } else if (Notification.permission !== "denied" && quarterNum === 100) {
-                        // نطلب الإذن عند بلوغ 100 إذا لم يكن ممنوحاً
                         Notification.requestPermission();
                     }
                     return true;
@@ -508,23 +537,18 @@
             return false;
         }
         
-        // فحص اكتمال الـ100 (لإشعار خاص) ولكن يمكن أن يتداخل مع الربع الرابع، لكننا نتأكد من التنبيه الفريد
-        let fullGoalNotified = false;
+        // فحص اكتمال الـ100
         function checkFullGoalCompletion() {
             if (currentCount >= 100 && !fullGoalNotified) {
                 fullGoalNotified = true;
-                // اهتزاز إضافي طويل قليلاً عند اكتمال الـ100 (ولكنه تم في الربع الرابع أيضاً، نتجنب التكرار)
-                // إذا لم يتم الاهتزاز سابقاً من نفس النقطة، نضمنه
                 if (lastQuarterNotified !== 4) {
-                    vibrateDevice(200);
+                    vibrateQuarter(130);
                     applyQuarterFlash();
                     lastQuarterNotified = 4;
                 }
-                // إشعار متصفح
                 if (Notification.permission === "granted") {
                     new Notification("🌿 الحمد لله 🌿", {
                         body: "أتممت 100 تسبيحة: سُبْحَانَ اللَّهِ وَبِحَمْدِهِ, غفر الله ذنوبك وإن كانت مثل زبد البحر.",
-                        icon: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle fill='%232a8b5c' cx='50' cy='50' r='45'/%3E%3Ctext x='50' y='67' font-size='40' text-anchor='middle' fill='white' font-family='monospace'%3E﴿%3C/text%3E%3C/svg%3E"
                     });
                 } else if (Notification.permission !== "denied") {
                     Notification.requestPermission();
@@ -539,36 +563,31 @@
             countDisplay.innerText = currentCount;
         }
         
-        // دالة الزيادة الرئيسية
+        // دالة الزيادة الرئيسية مع رجة خفيفة لكل نقرة
         function incrementCount() {
-            // الحد الأقصى رمزي 1000 (للتجربة دون تجاوز)
             if (currentCount >= 5000) {
                 alert("🌹 سبحان الله العظيم، العدد كبير جداً. يمكنك إعادة الضبط لمتابعة الذكر.");
                 return;
             }
+            
+            // ✅ رجة خفيفة جداً عند كل نقرة على الزر (ذاكرة اللمس)
+            vibrateOnTap();
             
             const newCount = currentCount + 1;
             currentCount = newCount;
             saveCount(currentCount);
             updateDisplay();
             
-            // 1. التحقق من اكتمال ربع (25,50,75,100) 
+            // التحقق من إكمال ربع (25,50,75,100)
             handleQuarterCompletion(currentCount);
             
-            // 2. التحقق من اكتمال الـ100 كهدف عام (يتم داخله منع الازدواجية)
+            // التحقق من الهدف العام (100)
             checkFullGoalCompletion();
             
-            // تأثير ضغط بسيط على الزر
+            // تأثير ضغط بصري
             const btn = dhikrButton;
             btn.style.transform = "scale(0.96)";
             setTimeout(() => { btn.style.transform = ""; }, 100);
-            
-            // إضافة اهتزاز لطيف جداً عند كل تسبيحة (اختياري لتحسين التجربة، يمكن تعطيله إذا أردت لكنه خفيف)
-            // ولكن لنجعل التجربة مريحة: كل تسبيحة اهتزاز خفيف 10ms (غير مزعج)
-            if (window.navigator && window.navigator.vibrate && currentCount % 2 === 0) {
-                // فقط نادراً لطيف
-                window.navigator.vibrate(8);
-            }
         }
         
         // إعادة ضبط العدد إلى صفر مع تأكيد
@@ -580,18 +599,16 @@
             currentCount = 0;
             saveCount(0);
             updateDisplay();
-            // إعادة تعيين متغيرات التتبع
             lastQuarterNotified = -1;
             fullGoalNotified = false;
-            // تأثير وميض بسيط لإعادة الضبط
+            // رجة عند إعادة الضبط خفيفة
+            if (window.navigator && window.navigator.vibrate) {
+                window.navigator.vibrate(40);
+            }
             const goalDiv = document.querySelector('.goal-badge');
             goalDiv.style.backgroundColor = "#f3e1bc";
             setTimeout(() => { goalDiv.style.backgroundColor = ""; }, 400);
-            // إعادة تعيين حالة الإشعارات الربعية
-            applyQuarterFlash(); // فقط تأثير بسيط ليس ربعاً
-            if (window.navigator && window.navigator.vibrate) {
-                window.navigator.vibrate(50);
-            }
+            applyQuarterFlash(); // تأثير وميض بسيط
         }
         
         // طلب إذن الإشعارات بشكل غير مزعج عند وصول المستخدم إلى 30 تسبيحة
@@ -605,7 +622,7 @@
             }
         }
         
-        // ربط الأحداث مع مراقبة الطلب اللطيف للإشعارات
+        // ربط الأحداث مع مراقبة الإشعارات
         const enhancedIncrement = function() {
             incrementCount();
             gentleNotificationRequest();
@@ -618,40 +635,56 @@
         dhikrButton.addEventListener('click', enhancedIncrement);
         resetBtn.addEventListener('click', enhancedReset);
         
+        // منع أي zoom إضافي عبر الأحداث على الزر نفسه (لأن الزر قد يكون سبب zoom في بعض المتصفحات)
+        dhikrButton.addEventListener('dblclick', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+        });
+        
+        document.querySelectorAll('button, .counter-btn, .ctrl-btn').forEach(btn => {
+            btn.addEventListener('dblclick', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+            });
+        });
+        
         // تحميل البيانات عند بدء التشغيل
         loadCount();
         
-        // مزامنة lastQuarterNotified بعد التحميل للتأكد من عدم فقدان الحالة
+        // مزامنة الحالة بعد التحميل نهائياً
         function syncStateAfterLoad() {
-            if (currentCount >= 25) {
-                const currentQuarter = Math.floor(currentCount / 25);
-                if (currentCount % 25 === 0) {
-                    lastQuarterNotified = currentQuarter;
-                } else {
-                    lastQuarterNotified = currentQuarter; 
-                    // اذا لم يكن مضاعفاً ولكننا تجاوزنا ربعاً سابقاً، نجعله يساوي currentQuarter حتى لا يعيد الاهتزاز
-                    if (currentQuarter > 0 && lastQuarterNotified > 0) {
-                        // لكن لكي لا يحدث اهتزاز مرة أخرى نضع lastQuarterNotified = currentQuarter (أي الربع الحالي غير المكتمل)
-                        // ولكن ربما لم يتم تنبيه الربع المكتمل، عند التحميل إذا كان العدد 26 مثلاً، الربع الأول 25 تم إنجازه، 
-                        // و lastQuarterNotified سيكون -1 سابقاً، نضبطه على 1 حتى لا يهتز مرة أخرى.
-                        if (currentCount > 25 && lastQuarterNotified < 1) lastQuarterNotified = 1;
-                        if (currentCount > 50 && lastQuarterNotified < 2) lastQuarterNotified = 2;
-                        if (currentCount > 75 && lastQuarterNotified < 3) lastQuarterNotified = 3;
-                        if (currentCount >= 100 && lastQuarterNotified < 4) lastQuarterNotified = 4;
-                    }
-                }
+            if (currentCount >= 100) {
+                lastQuarterNotified = 4;
+                fullGoalNotified = true;
+            } else if (currentCount >= 75) {
+                lastQuarterNotified = 3;
+            } else if (currentCount >= 50) {
+                lastQuarterNotified = 2;
+            } else if (currentCount >= 25) {
+                lastQuarterNotified = 1;
             } else {
-                if (currentCount < 25) lastQuarterNotified = -1;
+                lastQuarterNotified = -1;
             }
-            if (currentCount >= 100) fullGoalNotified = true;
+            if (currentCount === 100) fullGoalNotified = true;
             else fullGoalNotified = false;
         }
         syncStateAfterLoad();
         
-        // عند تحديث الصفحة نضمن عدم اهتزاز الأرباع السابقة
-        window.addEventListener('load', () => {
-            syncStateAfterLoad();
-            updateDisplay();
+        // حل إضافي لمنع الزوم عند النقر المزدوج على العناصر القابلة للنقر (للهواتف)
+        window.addEventListener('touchstart', (e) => {
+            if (e.touches.length > 1) e.preventDefault();
+        }, { passive: false });
+        
+        let lastClickTime = 0;
+        document.addEventListener('click', function(e) {
+            // منع التكرار السريع المسبب للـ zoom المحتمل
+            const now = Date.now();
+            if (now - lastClickTime < 300 && e.target === dhikrButton) {
+                // لا نمنع الإجراء، فقط نضمن عدم zoom
+                e.preventDefault();
+            }
+            lastClickTime = now;
         });
     })();
 </script>
