@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>تسبيح - سبحان الله وبحمده | عداد مباشر</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>تسبيح - سبحان الله وبحمده</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         * {
@@ -25,133 +25,121 @@
         }
 
         .tasbeeh-card {
-            max-width: 680px;
+            max-width: 720px;
             width: 100%;
-            background: rgba(255, 255, 255, 0.97);
-            border-radius: 64px 48px 64px 48px;
-            box-shadow: 0 35px 50px rgba(0, 0, 0, 0.35);
+            background: rgba(255, 255, 255, 0.96);
+            border-radius: 72px 56px 72px 56px;
+            box-shadow: 0 40px 55px rgba(0, 0, 0, 0.3);
             overflow: hidden;
+            backdrop-filter: blur(2px);
         }
 
         .header {
-            background: #fef7e8;
-            padding: 22px 28px 18px;
+            background: #fef9ed;
+            padding: 20px 28px 18px;
             text-align: center;
-            border-bottom: 2px solid #ebddbb;
+            border-bottom: 1px solid #e8dcbf;
         }
 
         .header h1 {
-            font-size: 1.9rem;
+            font-size: 1.8rem;
             font-weight: 800;
             color: #2a6b42;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 12px;
+            gap: 10px;
             flex-wrap: wrap;
         }
 
         .header h1 i {
-            font-size: 2rem;
-            color: #d9a13b;
+            font-size: 1.9rem;
+            color: #daa742;
         }
 
         .hadith-badge {
-            background: #efe3c7;
+            background: #ebe1cb;
             border-radius: 60px;
-            padding: 9px 20px;
-            margin-top: 14px;
-            font-size: 0.92rem;
+            padding: 8px 18px;
+            margin-top: 12px;
+            font-size: 0.85rem;
             font-weight: 600;
             color: #3b2c1a;
             display: inline-block;
+            line-height: 1.4;
         }
 
-        /* المنطقة التي يتم الضغط عليها - واضحة وكبيرة */
-        .click-zone {
-            background: #fffbf2;
-            padding: 50px 20px;
+        /* المنطقة النظيفة - فقط العدد */
+        .clean-zone {
+            background: #fffbf5;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            min-height: 380px;
+            min-height: 420px;
             transition: all 0.05s linear;
-            border-bottom: 1px solid #efe1ca;
-            border-top: 1px solid #efe1ca;
+            padding: 30px 20px;
         }
 
-        .click-zone:active {
-            background: #f8f0e0;
-            transform: scale(0.98);
+        .clean-zone:active {
+            background: #fcf6ec;
+            transform: scale(0.99);
         }
 
-        .count-number {
-            font-size: 7rem;
+        /* الرقم الضخم جداً */
+        .huge-number {
+            font-size: 11rem;
             font-weight: 800;
             font-family: 'Inter', 'Cairo', monospace;
-            letter-spacing: 8px;
-            background: rgba(45, 110, 70, 0.12);
-            padding: 20px 40px;
-            border-radius: 90px;
+            letter-spacing: 12px;
             color: #2a6b42;
-            line-height: 1.2;
-            display: inline-block;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+            line-height: 1;
+            text-align: center;
+            background: transparent;
+            text-shadow: 0 2px 12px rgba(0,0,0,0.05);
         }
 
-        .count-label {
-            font-size: 1.4rem;
+        /* كلمة "تسبيحة" بلون مميز و opcaity قليل */
+        .counter-label {
+            font-size: 2rem;
             font-weight: 600;
-            margin-top: 20px;
-            color: #7c6a48;
-            background: #f3ecdb;
+            margin-top: 16px;
+            color: #c49a3c;
+            opacity: 0.55;
+            letter-spacing: 2px;
+            background: transparent;
             display: inline-block;
-            padding: 10px 32px;
-            border-radius: 50px;
-        }
-
-        .tap-hint {
-            margin-top: 30px;
-            font-size: 1rem;
-            color: #a0865c;
-            background: #f9f2e2;
-            padding: 10px 24px;
-            border-radius: 40px;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            font-weight: 600;
         }
 
         .controls {
             display: flex;
             justify-content: center;
             gap: 20px;
-            padding: 20px;
-            background: #fffbf2;
+            padding: 18px 20px 24px;
+            background: #fffbf5;
             flex-wrap: wrap;
+            border-top: 1px solid #efe2ce;
         }
 
         .ctrl-btn {
             font-family: 'Cairo', sans-serif;
-            background: #f3e8d8;
+            background: #efe4d4;
             border: none;
-            padding: 12px 32px;
+            padding: 10px 28px;
             border-radius: 50px;
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 600;
             color: #326e48;
             cursor: pointer;
             transition: 0.2s;
             display: inline-flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
 
         .ctrl-btn.reset-btn {
-            background: #ecdbba;
+            background: #e8dbc8;
             color: #a5662a;
         }
 
@@ -160,72 +148,73 @@
         }
 
         .goal-badge {
-            background: #dff0e3;
-            padding: 8px 28px;
+            background: #e2f0e6;
+            padding: 8px 26px;
             border-radius: 50px;
             font-weight: 700;
             color: #236b47;
-            font-size: 1rem;
+            font-size: 0.95rem;
             display: inline-flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
 
         .benefits {
             background: #fefaf2;
-            padding: 24px 28px 32px;
+            padding: 22px 28px 30px;
+            border-top: 1px solid #ede1cd;
         }
 
         .benefits-title {
-            font-size: 1.5rem;
+            font-size: 1.45rem;
             font-weight: 800;
             color: #bc752e;
-            border-right: 6px solid #dcb45a;
-            padding-right: 18px;
-            margin-bottom: 20px;
+            border-right: 5px solid #dcb45a;
+            padding-right: 15px;
+            margin-bottom: 18px;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
 
         .grid-benefits {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-            gap: 18px;
-            margin-bottom: 28px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 25px;
         }
 
         .benefit-card {
             background: #ffffffdb;
-            padding: 16px 18px;
-            border-radius: 34px;
+            padding: 14px 16px;
+            border-radius: 32px;
             border: 1px solid #f1e2cc;
         }
 
         .benefit-card i {
-            font-size: 1.6rem;
+            font-size: 1.4rem;
             color: #d9a942;
-            margin-left: 10px;
+            margin-left: 8px;
         }
 
         .benefit-card strong {
-            font-size: 1.05rem;
+            font-size: 1rem;
             color: #2a764a;
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
 
         .benefit-card p {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: #534b38;
         }
 
         .dhikr-formula {
             background: #eaf2e2;
-            padding: 16px 22px;
+            padding: 14px 20px;
             border-radius: 44px;
             text-align: center;
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: 600;
             color: #2c633f;
         }
@@ -233,57 +222,79 @@
         footer {
             text-align: center;
             font-size: 0.7rem;
-            background: #fffbf2;
-            padding: 14px;
+            background: #fffbf5;
+            padding: 12px;
             color: #7e694c;
             border-top: 1px solid #ede2cf;
         }
 
         /* النص العائم */
-        .floating-text {
+        .float-dhikr {
             position: fixed;
             pointer-events: none;
-            font-size: 1.8rem;
+            font-size: 1.9rem;
             font-weight: 800;
-            font-family: 'Cairo', sans-serif;
+            font-family: 'Cairo', 'Inter', sans-serif;
             color: #e6b03a;
-            text-shadow: 0 0 8px rgba(0,0,0,0.3);
+            text-shadow: 0 0 10px rgba(0,0,0,0.2);
             z-index: 10000;
             white-space: nowrap;
             transform: translate(-50%, -50%);
-            animation: fadeFloat 0.7s ease-out forwards;
+            animation: floatFade 0.7s ease-out forwards;
         }
 
-        @keyframes fadeFloat {
+        @keyframes floatFade {
             0% {
-                opacity: 1;
+                opacity: 0.9;
                 transform: translate(-50%, -50%) scale(0.6);
             }
             40% {
                 opacity: 1;
-                transform: translate(-50%, -80%) scale(1.1);
+                transform: translate(-50%, -70%) scale(1.1);
             }
             100% {
                 opacity: 0;
-                transform: translate(-50%, -150%) scale(1.2);
+                transform: translate(-50%, -140%) scale(1.2);
             }
         }
 
         .quarter-flash {
-            animation: flashBg 0.3s ease;
+            animation: bgFlash 0.3s ease;
         }
 
-        @keyframes flashBg {
-            0% { background: #fffbf2; }
-            50% { background: #ffe5b4; }
-            100% { background: #fffbf2; }
+        @keyframes bgFlash {
+            0% { background: #fffbf5; }
+            50% { background: #ffe9c7; }
+            100% { background: #fffbf5; }
         }
 
-        @media (max-width: 550px) {
-            .count-number { font-size: 4rem; padding: 12px 24px; letter-spacing: 4px; }
-            .count-label { font-size: 1.1rem; }
-            .floating-text { font-size: 1.3rem; }
-            .click-zone { min-height: 300px; padding: 35px 15px; }
+        @media (max-width: 600px) {
+            .huge-number {
+                font-size: 6rem;
+                letter-spacing: 6px;
+            }
+            .counter-label {
+                font-size: 1.4rem;
+            }
+            .clean-zone {
+                min-height: 340px;
+            }
+            .float-dhikr {
+                font-size: 1.3rem;
+            }
+            .header h1 {
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (max-width: 450px) {
+            .huge-number {
+                font-size: 4.8rem;
+                letter-spacing: 4px;
+            }
+            .counter-label {
+                font-size: 1.2rem;
+            }
         }
     </style>
 </head>
@@ -301,16 +312,10 @@
         </div>
     </div>
 
-    <!-- منطقة الضغط - اضغط بأي مكان فيها -->
-    <div id="clickZone" class="click-zone">
-        <div class="count-number" id="countDisplay">0</div>
-        <div class="count-label">
-            <i class="fas fa-check-circle"></i> تسبيحة
-        </div>
-        <div class="tap-hint">
-            <i class="fas fa-hand-peace fa-flip-horizontal"></i> اضغط بأي مكان في هذه المنطقة للتسبيح
-            <i class="fas fa-arrow-down"></i>
-        </div>
+    <!-- منطقة نظيفة تماماً: فقط العدد وكلمة تسبيحة -->
+    <div id="clickZone" class="clean-zone">
+        <div class="huge-number" id="countDisplay">0</div>
+        <div class="counter-label">تسبيحة</div>
     </div>
 
     <div class="controls">
@@ -331,38 +336,38 @@
             <div class="benefit-card">
                 <i class="fas fa-water"></i>
                 <strong>غفران الذنوب</strong>
-                <p>تُغفر صغائر الذنوب وإن كانت كثيرة كزبد البحر، فضلاً من الله.</p>
+                <p>تُغفر صغائر الذنوب وإن كانت كثيرة كزبد البحر.</p>
             </div>
             <div class="benefit-card">
                 <i class="fas fa-clock"></i>
                 <strong>الوقت المفضل</strong>
-                <p>يُقال في اليوم، والأفضل تكراره مائة مرة في الصباح ومائة في المساء.</p>
+                <p>يُقال في اليوم، والأفضل مائة في الصباح ومائة في المساء.</p>
             </div>
             <div class="benefit-card">
                 <i class="fas fa-shield-alt"></i>
                 <strong>حرز من الشيطان</strong>
-                <p>يكون حصناً للمسلم من الشيطان في يومه، ويبارك الله في وقته.</p>
+                <p>يكون حصناً للمسلم من الشيطان في يومه.</p>
             </div>
             <div class="benefit-card">
                 <i class="fas fa-gem"></i>
                 <strong>أجر عظيم</strong>
-                <p>لم يأتِ أحد بمثل ما جاء به إلا من زاد عليه، كنز من الحسنات.</p>
+                <p>لم يأتِ أحد بمثل ما جاء به إلا من زاد عليه.</p>
             </div>
         </div>
 
         <div class="dhikr-formula">
-            <i class="fas fa-quran"></i> صيغة الذكر الأساسية: 
-            <span>«سُبْحَانَ اللَّهِ وَبِحَمْدِهِ»</span> مائة مرة يومياً.
+            <i class="fas fa-quran"></i> صيغة الذكر: 
+            <span style="font-weight:800;">«سُبْحَانَ اللَّهِ وَبِحَمْدِهِ»</span> مائة مرة يومياً
         </div>
     </div>
     <footer>
-        <i class="fas fa-heart" style="color:#d4a13e;"></i> التسبيح نور — سبحان الله وبحمده
+        <i class="fas fa-heart" style="color:#d4a13e;"></i> سبحان الله وبحمده عدد خلقه
     </footer>
 </div>
 
 <script>
     (function() {
-        // منع الزوم
+        // منع التكبير و zoom
         document.addEventListener('dblclick', (e) => e.preventDefault());
         document.addEventListener('touchstart', (e) => {
             if (e.touches.length > 1) e.preventDefault();
@@ -374,11 +379,11 @@
         const resetBtn = document.getElementById('resetBtn');
         
         // التخزين
-        const STORAGE_KEY = 'tasbeeh_final_v1';
-        const DATE_KEY = 'tasbeeh_date_final_v1';
+        const STORAGE_KEY = 'tasbeeh_clean_v2';
+        const DATE_KEY = 'tasbeeh_clean_date_v2';
         
         let currentCount = 0;
-        let lastQuarter = -1; // 1,2,3,4
+        let lastQuarter = -1; // 1=25, 2=50, 3=75, 4=100
         let fullNotified = false;
         
         // التاريخ
@@ -387,29 +392,31 @@
             return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
         }
         
-        function save() {
+        function saveData() {
             localStorage.setItem(STORAGE_KEY, currentCount);
             localStorage.setItem(DATE_KEY, getToday());
         }
         
-        function load() {
+        function loadData() {
             const savedDate = localStorage.getItem(DATE_KEY);
             const today = getToday();
             if (savedDate !== today) {
                 currentCount = 0;
                 lastQuarter = -1;
                 fullNotified = false;
-                save();
+                saveData();
             } else {
                 const saved = localStorage.getItem(STORAGE_KEY);
-                if (saved && !isNaN(parseInt(saved))) {
+                if (saved !== null && !isNaN(parseInt(saved))) {
                     currentCount = parseInt(saved);
                 } else {
                     currentCount = 0;
                 }
-                if (currentCount >= 100) fullNotified = true;
-                if (currentCount >= 100) lastQuarter = 4;
-                else if (currentCount >= 75) lastQuarter = 3;
+                // تحديث الحالة
+                if (currentCount >= 100) {
+                    fullNotified = true;
+                    lastQuarter = 4;
+                } else if (currentCount >= 75) lastQuarter = 3;
                 else if (currentCount >= 50) lastQuarter = 2;
                 else if (currentCount >= 25) lastQuarter = 1;
                 else lastQuarter = -1;
@@ -421,7 +428,7 @@
             countDisplay.innerText = currentCount;
         }
         
-        // رجة خفيفة
+        // رجة خفيفة جداً
         function vibrateLight() {
             if (window.navigator && window.navigator.vibrate) {
                 window.navigator.vibrate(8);
@@ -430,103 +437,101 @@
         
         function vibrateMedium() {
             if (window.navigator && window.navigator.vibrate) {
-                window.navigator.vibrate(70);
+                window.navigator.vibrate(65);
             }
         }
         
-        // النص العائم
+        // النص العائم "سبحان الله وبحمده"
         function showFloatingText(x, y) {
-            const div = document.createElement('div');
-            div.className = 'floating-text';
-            div.textContent = 'سُبْحَانَ اللَّهِ وَبِحَمْدِهِ';
-            div.style.left = x + 'px';
-            div.style.top = y + 'px';
-            document.body.appendChild(div);
-            setTimeout(() => { if(div && div.remove) div.remove(); }, 700);
+            const span = document.createElement('div');
+            span.className = 'float-dhikr';
+            span.textContent = 'سُبْحَانَ اللَّهِ وَبِحَمْدِهِ';
+            span.style.left = x + 'px';
+            span.style.top = y + 'px';
+            document.body.appendChild(span);
+            setTimeout(() => { if(span && span.remove) span.remove(); }, 700);
         }
         
-        // وميض الربع
-        function flashQuarter() {
+        // تأثير وميض المنطقة
+        function flashZone() {
             clickZone.classList.add('quarter-flash');
             setTimeout(() => clickZone.classList.remove('quarter-flash'), 300);
         }
         
-        // إشعار
-        let notifAsked = false;
-        function sendNotification(title, msg) {
+        // إشعارات المتصفح
+        let notifRequested = false;
+        function sendNotification(title, body) {
             if (Notification.permission === 'granted') {
-                new Notification(title, { body: msg });
-            } else if (Notification.permission !== 'denied' && !notifAsked) {
+                new Notification(title, { body });
+            } else if (Notification.permission !== 'denied' && !notifRequested) {
                 Notification.requestPermission();
-                notifAsked = true;
+                notifRequested = true;
             }
         }
         
-        // الدالة الأساسية للزيادة
-        function incrementCount(e) {
-            // منع أي سلوك افتراضي
+        // الوظيفة الأساسية للزيادة
+        function handleTap(e) {
             e.preventDefault();
             e.stopPropagation();
             
             if (currentCount >= 5000) {
-                alert("سبحان الله العظيم، يمكنك إعادة الضبط.");
+                alert('🌹 سبحان الله العظيم، يمكنك إعادة الضبط');
                 return;
             }
             
-            // 1. رجة خفيفة
+            // رجة خفيفة مع كل نقرة
             vibrateLight();
             
-            // 2. الحصول على موقع النقرة
-            let x, y;
+            // تحديد موقع النقرة لعرض النص
+            let clientX, clientY;
             if (e.touches) {
                 const touch = e.touches[0];
                 if (touch) {
-                    x = touch.clientX;
-                    y = touch.clientY;
+                    clientX = touch.clientX;
+                    clientY = touch.clientY;
                 }
             } else {
-                x = e.clientX;
-                y = e.clientY;
+                clientX = e.clientX;
+                clientY = e.clientY;
             }
             
-            if (x !== undefined && y !== undefined) {
-                showFloatingText(x, y);
+            if (clientX !== undefined && clientY !== undefined) {
+                showFloatingText(clientX, clientY);
             } else {
-                // fallback: منتصف المنطقة
                 const rect = clickZone.getBoundingClientRect();
                 showFloatingText(rect.left + rect.width/2, rect.top + rect.height/2);
             }
             
-            // 3. زيادة العدد
+            // زيادة العدد
             currentCount++;
             updateDisplay();
-            save();
+            saveData();
             
-            // 4. تأثير الضغط
+            // تأثير ضغط بسيط
             clickZone.style.transform = 'scale(0.99)';
             setTimeout(() => { clickZone.style.transform = ''; }, 80);
             
-            // 5. التحقق من الأرباع
+            // فحص الأرباع (25، 50، 75، 100)
             if (currentCount === 25 && lastQuarter < 1) {
                 lastQuarter = 1;
                 vibrateMedium();
-                flashQuarter();
-                sendNotification('✨ أتممت 25 تسبيحة ✨', 'بارك الله فيك، أكمل إلى 100');
+                flashZone();
+                sendNotification('✨ أتممت 25 تسبيحة ✨', 'بارك الله فيك');
             } else if (currentCount === 50 && lastQuarter < 2) {
                 lastQuarter = 2;
                 vibrateMedium();
-                flashQuarter();
+                flashZone();
                 sendNotification('✨ أتممت 50 تسبيحة ✨', 'نصف الطريق، ثبّتك الله');
             } else if (currentCount === 75 && lastQuarter < 3) {
                 lastQuarter = 3;
                 vibrateMedium();
-                flashQuarter();
-                sendNotification('✨ أتممت 75 تسبيحة ✨', 'اقتربت كثيراً، أجر عظيم');
+                flashZone();
+                sendNotification('✨ أتممت 75 تسبيحة ✨', 'اقتربت، أجر عظيم');
             } else if (currentCount === 100 && lastQuarter < 4) {
                 lastQuarter = 4;
                 vibrateMedium();
-                flashQuarter();
-                sendNotification('🌿 هنيئاً لك 🌿', 'أتممت 100 تسبيحة: سبحان الله وبحمده، غفر الله ذنوبك');
+                flashZone();
+                sendNotification('🌿 هنيئاً 🌿', 'أتممت 100 تسبيحة: سبحان الله وبحمده، غفر الله ذنوبك');
                 fullNotified = true;
             }
             
@@ -535,8 +540,8 @@
                 fullNotified = true;
                 if (lastQuarter !== 4) {
                     vibrateMedium();
-                    flashQuarter();
-                    sendNotification('🌿 الحمد لله 🌿', 'أتممت 100 تسبيحة، غفر الله ذنوبك');
+                    flashZone();
+                    sendNotification('🌿 الحمد لله 🌿', 'أكملت 100 تسبيحة، غفر الله ذنوبك');
                 }
             } else if (currentCount < 100) {
                 fullNotified = false;
@@ -546,26 +551,24 @@
         // إعادة الضبط
         function resetCounter() {
             if (currentCount !== 0) {
-                const ok = confirm('هل تريد إعادة ضبط عدد التسبيحات لليوم؟');
-                if (!ok) return;
+                const confirmReset = confirm('هل تريد إعادة ضبط عدد التسبيحات لليوم؟');
+                if (!confirmReset) return;
             }
             currentCount = 0;
             lastQuarter = -1;
             fullNotified = false;
             updateDisplay();
-            save();
+            saveData();
             vibrateMedium();
-            flashQuarter();
-            // عرض نص في المنتصف
+            flashZone();
+            // نص عائم في المنتصف
             const rect = clickZone.getBoundingClientRect();
             showFloatingText(rect.left + rect.width/2, rect.top + rect.height/2);
         }
         
-        // ربط الأحداث لمنطقة الضغط (تعمل 100%)
-        clickZone.addEventListener('click', incrementCount);
-        clickZone.addEventListener('touchstart', incrementCount, { passive: false });
-        
-        // منع أي أحداث أخرى تعطل الضغط
+        // ربط الأحداث (تعمل 100%)
+        clickZone.addEventListener('click', handleTap);
+        clickZone.addEventListener('touchstart', handleTap, { passive: false });
         clickZone.addEventListener('dblclick', (e) => e.preventDefault());
         
         // زر إعادة الضبط
@@ -575,46 +578,39 @@
         });
         resetBtn.addEventListener('touchstart', (e) => e.stopPropagation());
         
-        // طلب الإذن للإشعارات بعد 15 تسبيحة
-        let asked = false;
-        function requestNotifGentle() {
-            if (!asked && Notification && Notification.permission === 'default' && currentCount >= 15) {
+        // طلب الإذن للإشعارات بعد 15 تسبيحة (بلطف)
+        let askedGentle = false;
+        function gentleNotifRequest() {
+            if (!askedGentle && Notification && Notification.permission === 'default' && currentCount >= 15) {
                 Notification.requestPermission();
-                asked = true;
+                askedGentle = true;
             }
         }
         
-        // مراقبة وطلب الإذن بعد زيارات
-        const origInc = incrementCount;
-        window.addEventListener('load', () => {
-            load();
-            setTimeout(() => {
-                if (currentCount >= 15 && Notification.permission === 'default') {
-                    Notification.requestPermission();
-                    asked = true;
-                }
-            }, 2000);
-        });
-        
-        // تحديث الوظيفة لطلب الإذن
-        const superIncrement = function(e) {
-            incrementCount(e);
-            if (!asked && Notification.permission === 'default' && currentCount >= 15) {
-                Notification.requestPermission();
-                asked = true;
-            }
+        // تعزيز الدالة لطلب الإذن
+        const superHandle = function(e) {
+            handleTap(e);
+            gentleNotifRequest();
         };
         
-        // إعادة ربط الأحداث لاستخدام superIncrement
-        clickZone.removeEventListener('click', incrementCount);
-        clickZone.removeEventListener('touchstart', incrementCount);
-        clickZone.addEventListener('click', superIncrement);
-        clickZone.addEventListener('touchstart', superIncrement, { passive: false });
+        // إعادة ربط الأحداث بالدالة المحسنة
+        clickZone.removeEventListener('click', handleTap);
+        clickZone.removeEventListener('touchstart', handleTap);
+        clickZone.addEventListener('click', superHandle);
+        clickZone.addEventListener('touchstart', superHandle, { passive: false });
         
-        // تحميل أولي
-        load();
+        // تحميل البيانات عند البداية
+        loadData();
         
-        console.log('✅ التطبيق يعمل - اضغط على المنطقة الوسطى');
+        // طلب بلطف بعد تحميل الصفحة إذا كان العدد كبير
+        setTimeout(() => {
+            if (currentCount >= 15 && Notification.permission === 'default') {
+                Notification.requestPermission();
+                askedGentle = true;
+            }
+        }, 2000);
+        
+        console.log('✅ التطبيق يعمل - اضغط على المنطقة النظيفة (الأرقام)');
     })();
 </script>
 </body>
