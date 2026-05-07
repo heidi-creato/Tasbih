@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <!-- منع الزوم عبر css و meta (viewport) مع إمكانية التحكم اليدوي -->
-    <title>تسبيح - سبحان الله وبحمده | عداد مع رجّة خفيفة ومنع الزوم</title>
+    <!-- منع الزوم تمامًا -->
+    <title>تسبيح - سبحان الله وبحمده | عدّ بالمنتصف مع حركة fade out</title>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Font Awesome 6 (أيقونات مساعدة فقط، لا يد في العداد) -->
+    <!-- Font Awesome 6 (أيقونات مساعدة فقط) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         * {
@@ -15,8 +15,7 @@
             padding: 0;
             box-sizing: border-box;
             user-select: none; /* منع تحديد النص */
-            /* منع أي تكبير/تصغير ناتج عن اللمس المزدوج عبر CSS */
-            touch-action: manipulation; /* يمنع zoom بالقدر المستطاع مع الحفاظ على التمرير */
+            touch-action: manipulation; /* تحسين اللمس ومنع zoom */
         }
 
         body {
@@ -27,8 +26,7 @@
             justify-content: center;
             align-items: center;
             padding: 20px;
-            /* منع أي zoom إضافي */
-            touch-action: pan-x pan-y; /* يسمح بالتمرير فقط، يمنع pinch-zoom و double-tap zoom كلياً */
+            touch-action: pan-x pan-y; /* يمنع pinch zoom و double-tap zoom كلياً */
         }
 
         /* بطاقة التطبيق الرئيسية */
@@ -41,10 +39,6 @@
             overflow: hidden;
             transition: transform 0.2s ease;
             backdrop-filter: blur(1px);
-        }
-
-        .tasbeeh-card:hover {
-            transform: scale(1.01);
         }
 
         /* الرأس */
@@ -84,59 +78,104 @@
             line-height: 1.4;
         }
 
-        /* منطقة العداد الضخم - بدون أيقونة يد */
-        .dhikr-area {
-            display: flex;
-            justify-content: center;
-            padding: 45px 20px 30px;
+        /* منطقة المنتصف الرئيسية - المكان الذي يتم الضغط عليه للتسبيح (تم إزالة الزر الكبير) */
+        .middle-tap-area {
             background: #fffbf2;
-        }
-
-        .counter-btn {
-            background: radial-gradient(circle at 35% 25%, #2f9e6b, #1b784b);
-            border: none;
-            width: 270px;
-            height: 270px;
-            border-radius: 50%;
-            cursor: pointer;
-            box-shadow: 0 22px 38px rgba(0, 0, 0, 0.35), 0 0 0 10px rgba(253, 216, 116, 0.6), 0 0 0 15px rgba(110, 70, 25, 0.15);
-            transition: all 0.08s linear;
+            padding: 40px 20px 50px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            color: white;
+            cursor: pointer;
+            position: relative;
+            min-height: 380px;
+            transition: background 0.1s ease;
+            box-shadow: inset 0 0 0 1px rgba(255,245,200,0.6);
+        }
+        
+        .middle-tap-area:active {
+            background: #fcf5e6;
+        }
+
+        /* حاوية العدد الكبير */
+        .counter-container {
             text-align: center;
-            touch-action: manipulation; /* تحسين اللمس */
+            margin-bottom: 20px;
         }
 
-        .counter-btn:active {
-            transform: scale(0.96);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4), 0 0 0 8px rgba(255, 225, 120, 0.8);
-        }
-
-        /* عرض الرقم فقط (بدون أيقونة يد) */
         .count-number {
-            font-size: 5rem;
+            font-size: 6rem;
             font-weight: 800;
             font-family: 'Inter', 'Cairo', monospace;
-            letter-spacing: 6px;
-            background: rgba(0, 0, 0, 0.2);
-            padding: 10px 22px;
-            border-radius: 70px;
-            backdrop-filter: blur(4px);
+            letter-spacing: 8px;
+            background: rgba(45, 110, 70, 0.1);
+            padding: 15px 30px;
+            border-radius: 90px;
+            color: #2a6b42;
+            backdrop-filter: blur(2px);
             line-height: 1.2;
+            display: inline-block;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.05);
         }
 
         .count-label {
             font-size: 1.3rem;
             font-weight: 600;
-            background: rgba(0, 0, 0, 0.2);
-            padding: 6px 20px;
+            margin-top: 18px;
+            color: #7c6a48;
+            background: #f3ecdb;
+            display: inline-block;
+            padding: 8px 28px;
+            border-radius: 50px;
+        }
+
+        /* نص توجيهي */
+        .tap-hint {
+            margin-top: 25px;
+            font-size: 0.95rem;
+            color: #a0865c;
+            background: #f9f2e2;
+            padding: 8px 18px;
             border-radius: 40px;
-            margin-top: 5px;
-            letter-spacing: 1px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+        }
+
+        /* حركة النصوص العائمة (fade out) */
+        .floating-dhikr {
+            position: fixed;
+            pointer-events: none;
+            font-family: 'Cairo', 'Inter', sans-serif;
+            font-size: 1.7rem;
+            font-weight: 700;
+            color: #e6b450;
+            text-shadow: 0 2px 12px rgba(0,0,0,0.2);
+            z-index: 1000;
+            white-space: nowrap;
+            background: linear-gradient(135deg, #ffebc2, #f9d27e);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: #d9942c;
+            font-weight: 800;
+            transform: translate(-50%, -50%);
+            animation: fadeOutUp 0.8s ease-out forwards;
+        }
+        
+        @keyframes fadeOutUp {
+            0% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(0.8);
+            }
+            30% {
+                opacity: 1;
+                transform: translate(-50%, -70%) scale(1.1);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(-50%, -130%) scale(1.2);
+            }
         }
 
         /* أزرار التحكم */
@@ -148,6 +187,7 @@
             background: #fffbf2;
             flex-wrap: wrap;
             align-items: center;
+            border-top: 1px solid #efe1ca;
         }
 
         .ctrl-btn {
@@ -282,17 +322,17 @@
         }
 
         @media (max-width: 550px) {
-            .counter-btn {
-                width: 210px;
-                height: 210px;
-            }
             .count-number {
-                font-size: 3.6rem;
-                padding: 6px 14px;
-                letter-spacing: 3px;
+                font-size: 3.8rem;
+                padding: 10px 18px;
+                letter-spacing: 4px;
             }
             .count-label {
-                font-size: 1.1rem;
+                font-size: 1rem;
+            }
+            .floating-dhikr {
+                font-size: 1.2rem;
+                white-space: nowrap;
             }
             .header h1 {
                 font-size: 1.5rem;
@@ -300,16 +340,20 @@
             .benefits-title {
                 font-size: 1.3rem;
             }
+            .tap-hint {
+                font-size: 0.8rem;
+            }
         }
-
-        /* تأثير وميض عند اكتمال ربع */
-        @keyframes quarterFlash {
-            0% { background: radial-gradient(circle at 35% 25%, #f5bc70, #e59942); box-shadow: 0 0 0 12px #ffdd99; }
-            100% { background: radial-gradient(circle at 35% 25%, #2f9e6b, #1b784b); box-shadow: 0 22px 38px rgba(0, 0, 0, 0.35), 0 0 0 10px rgba(253, 216, 116, 0.6); }
+        
+        /* تأثير وميض خفيف عند اكتمال الربع */
+        .quarter-glow {
+            animation: bgFlash 0.4s ease;
         }
-
-        .quarter-effect {
-            animation: quarterFlash 0.35s ease-out;
+        
+        @keyframes bgFlash {
+            0% { background: #fff2db; }
+            50% { background: #ffe1a0; }
+            100% { background: #fffbf2; }
         }
     </style>
 </head>
@@ -327,12 +371,18 @@
         </div>
     </div>
 
-    <div class="dhikr-area">
-        <button class="counter-btn" id="dhikrButton" aria-label="تسبيحة">
-            <!-- تم إزالة أيقونة اليد تمامًا، فقط العدد والنص -->
+    <!-- المنطقة الوسطى بالكامل - مكان الضغط للتسبيح (تم إزالة الزر الكبير) -->
+    <div id="tapZone" class="middle-tap-area">
+        <div class="counter-container">
             <div class="count-number" id="countDisplay">0</div>
-            <div class="count-label">مرة</div>
-        </button>
+            <div class="count-label">
+                <i class="fas fa-check-circle"></i> تسبيحة
+            </div>
+        </div>
+        <div class="tap-hint">
+            <i class="fas fa-hand-peace fa-flip-horizontal"></i> اضغط في أي مكان بهذه المنطقة للتسبيح
+            <i class="fas fa-arrow-down"></i>
+        </div>
     </div>
 
     <div class="controls">
@@ -386,16 +436,12 @@
 
 <script>
     (function() {
-        // ================== منع التكبير (zoom) عند النقر المزدوج على الشاشة ==================
-        // منع الحدث الافتراضي للنقر المزدوج على أي منطقة في الصفحة لمنع تكبير المتصفح
+        // ================== منع التكبير (zoom) عند النقر المزدوج ==================
         document.addEventListener('dblclick', function(e) {
             e.preventDefault();
             return false;
         }, { passive: false });
         
-        // أيضاً منع pinch zoom عبر إضافة مستمع touchmove مع منع تكبير اثناء اللمسات المتعددة
-        // لكن الحل الأساسي هو meta viewport مع user-scalable=no + touch-action على body،
-        // ونضيف حماية إضافية لمنع تغيير viewport scale.
         let lastTouchEnd = 0;
         document.addEventListener('touchend', function(event) {
             const now = Date.now();
@@ -405,30 +451,27 @@
             lastTouchEnd = now;
         }, false);
         
-        // منع حركة الـ zoom باللمسات المزدوجة أيضاً
         document.addEventListener('touchstart', (event) => {
             if (event.touches.length > 1) {
                 event.preventDefault();
             }
         }, { passive: false });
         
-        // ================== منطق التسبيح والعداد ==================
-        // مفاتيح التخزين المحلي
-        const STORAGE_KEY = 'tasbeeh_count_daily_v3';
-        const LAST_DATE_KEY = 'tasbeeh_last_date_v3';
-        
+        // ================== منطق التسبيح ==================
         // عناصر DOM
         const countDisplay = document.getElementById('countDisplay');
-        const dhikrButton = document.getElementById('dhikrButton');
+        const tapZone = document.getElementById('tapZone');  // المنطقة الوسطى بالكامل
         const resetBtn = document.getElementById('resetBtn');
         
-        let currentCount = 0;
+        // مفاتيح التخزين المحلي
+        const STORAGE_KEY = 'tasbeeh_count_center_v4';
+        const LAST_DATE_KEY = 'tasbeeh_last_date_center_v4';
         
-        // مُتغير لتتبع آخر ربع تم الوصول إليه لمنع الاهتزاز المتكرر لنفس الربع
-        let lastQuarterNotified = -1;   // القيم: 1/2/3/4 للأرباع 25,50,75,100
+        let currentCount = 0;
+        let lastQuarterNotified = -1;   // 1,2,3,4
         let fullGoalNotified = false;
         
-        // الحصول على تاريخ اليوم بصيغة YYYY-MM-DD
+        // الحصول على تاريخ اليوم
         function getTodayDate() {
             const today = new Date();
             const year = today.getFullYear();
@@ -437,13 +480,11 @@
             return `${year}-${month}-${day}`;
         }
         
-        // حفظ العدد في localStorage مع التاريخ
         function saveCount(count) {
             localStorage.setItem(STORAGE_KEY, count.toString());
             localStorage.setItem(LAST_DATE_KEY, getTodayDate());
         }
         
-        // تحميل العدد حسب اليوم
         function loadCount() {
             const savedDate = localStorage.getItem(LAST_DATE_KEY);
             const today = getTodayDate();
@@ -459,138 +500,172 @@
                 } else {
                     currentCount = 0;
                 }
-                updateQuarterNotifyState();
-                if (currentCount >= 100) fullGoalNotified = true;
-                else fullGoalNotified = false;
+                if (currentCount >= 100) {
+                    fullGoalNotified = true;
+                    lastQuarterNotified = 4;
+                } else if (currentCount >= 75) lastQuarterNotified = 3;
+                else if (currentCount >= 50) lastQuarterNotified = 2;
+                else if (currentCount >= 25) lastQuarterNotified = 1;
+                else lastQuarterNotified = -1;
             }
             updateDisplay();
         }
         
-        // تحديث lastQuarterNotified بناءً على currentCount (لتجنب الاهتزاز بعد التحميل)
-        function updateQuarterNotifyState() {
-            if (currentCount >= 100) {
-                lastQuarterNotified = 4;
-            } else if (currentCount >= 75) {
-                lastQuarterNotified = 3;
-            } else if (currentCount >= 50) {
-                lastQuarterNotified = 2;
-            } else if (currentCount >= 25) {
-                lastQuarterNotified = 1;
-            } else {
-                lastQuarterNotified = -1;
-            }
-            // إذا كان العدد مضاعف 25 بالضبط وتم تحميل الصفحة، نعتبر الربع قد تم إشعاره سابقاً
-            if (currentCount === 25) lastQuarterNotified = 1;
-            if (currentCount === 50) lastQuarterNotified = 2;
-            if (currentCount === 75) lastQuarterNotified = 3;
-            if (currentCount === 100) lastQuarterNotified = 4;
+        function updateDisplay() {
+            countDisplay.innerText = currentCount;
         }
         
-        // دالة الاهتزاز (vibration) المدعومة في المتصفحات الحديثة
-        // هذه الرجة لكل نقرة (خفيفة)
+        // رجة خفيفة جداً مع كل نقرة
         function vibrateOnTap() {
             if (window.navigator && window.navigator.vibrate) {
-                window.navigator.vibrate(12); // رجة خفيفة جداً بكل نقرة
+                window.navigator.vibrate(10);
             }
         }
         
-        // رجة قوية عند إكمال ربع
-        function vibrateQuarter(duration = 90) {
+        // رجة أقوى لإكمال الربع
+        function vibrateQuarter(duration = 80) {
             if (window.navigator && window.navigator.vibrate) {
                 window.navigator.vibrate(duration);
             }
         }
         
-        // إضافة تأثير وميض على الزر عند إكمال ربع
-        function applyQuarterFlash() {
-            const btn = dhikrButton;
-            btn.classList.add('quarter-effect');
+        // تأثير وميض المنطقة عند إكمال ربع
+        function applyQuarterGlow() {
+            tapZone.classList.add('quarter-glow');
             setTimeout(() => {
-                btn.classList.remove('quarter-effect');
-            }, 380);
+                tapZone.classList.remove('quarter-glow');
+            }, 400);
         }
         
-        // فحص ومعالجة إكمال ربع (كل 25 تسبيحة)
-        function handleQuarterCompletion(newCount) {
-            if (newCount === 0) return false;
-            const quarterValue = [25, 50, 75, 100];
-            for (let i = 0; i < quarterValue.length; i++) {
-                const quarterNum = quarterValue[i];
-                const quarterIndex = i + 1;
-                if (newCount === quarterNum && lastQuarterNotified !== quarterIndex) {
-                    lastQuarterNotified = quarterIndex;
-                    // رجة مميزة عند اكتمال الربع
-                    vibrateQuarter(110);
-                    applyQuarterFlash();
-                    // إشعار للمتصفح إذا أذن
-                    if (Notification.permission === "granted") {
-                        new Notification(`✨ إنجاز ✨`, {
-                            body: `أكملت ${quarterNum} تسبيحة من «سبحان الله وبحمده» ، بارك الله فيك`,
-                            silent: false,
-                        });
-                    } else if (Notification.permission !== "denied" && quarterNum === 100) {
-                        Notification.requestPermission();
-                    }
-                    return true;
-                }
-            }
-            return false;
+        // حركة ظهور النص (Motion fade out) "سبحان الله وبحمده"
+        function createFloatingDhikr(x, y) {
+            const dhikrText = document.createElement('div');
+            dhikrText.className = 'floating-dhikr';
+            // نص الذكر كما هو مطلوب
+            dhikrText.textContent = 'سُبْحَانَ اللَّهِ وَبِحَمْدِهِ';
+            dhikrText.style.left = x + 'px';
+            dhikrText.style.top = y + 'px';
+            document.body.appendChild(dhikrText);
+            // إزالة العنصر بعد انتهاء الحركة
+            setTimeout(() => {
+                dhikrText.remove();
+            }, 800);
         }
         
-        // فحص اكتمال الـ100
-        function checkFullGoalCompletion() {
-            if (currentCount >= 100 && !fullGoalNotified) {
-                fullGoalNotified = true;
-                if (lastQuarterNotified !== 4) {
-                    vibrateQuarter(130);
-                    applyQuarterFlash();
-                    lastQuarterNotified = 4;
-                }
-                if (Notification.permission === "granted") {
-                    new Notification("🌿 الحمد لله 🌿", {
-                        body: "أتممت 100 تسبيحة: سُبْحَانَ اللَّهِ وَبِحَمْدِهِ, غفر الله ذنوبك وإن كانت مثل زبد البحر.",
-                    });
-                } else if (Notification.permission !== "denied") {
-                    Notification.requestPermission();
-                }
-            } else if (currentCount < 100) {
-                fullGoalNotified = false;
-            }
-        }
-        
-        // تحديث واجهة العدد
-        function updateDisplay() {
-            countDisplay.innerText = currentCount;
-        }
-        
-        // دالة الزيادة الرئيسية مع رجة خفيفة لكل نقرة
-        function incrementCount() {
+        // معالجة الضغط على المنطقة (حدث النقر)
+        function handleTap(e) {
+            // منع تكرار سريع جداً (اختياري لكن ليس مؤثراً)
+            e.stopPropagation();
+            
+            // زيادة العدد
             if (currentCount >= 5000) {
-                alert("🌹 سبحان الله العظيم، العدد كبير جداً. يمكنك إعادة الضبط لمتابعة الذكر.");
+                alert("🌹 سبحان الله العظيم، يمكنك إعادة الضبط لمتابعة الذكر.");
                 return;
             }
             
-            // ✅ رجة خفيفة جداً عند كل نقرة على الزر (ذاكرة اللمس)
+            // 1. رجة خفيفة لكل نقرة
             vibrateOnTap();
             
+            // 2. الحصول على إحداثيات النقر لعرض النص العائم
+            let clientX, clientY;
+            if (e.touches) {
+                // اللمس على الهواتف
+                const touch = e.touches[0];
+                clientX = touch.clientX;
+                clientY = touch.clientY;
+            } else {
+                clientX = e.clientX;
+                clientY = e.clientY;
+            }
+            
+            // عرض نص "سبحان الله وبحمده" مع حركة fade out
+            if (clientX !== undefined && clientY !== undefined) {
+                createFloatingDhikr(clientX, clientY);
+            } else {
+                // fallback: في حالة عدم وجود احداثيات (نادراً) نعرض في منتصف المنطقة
+                const rect = tapZone.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
+                createFloatingDhikr(centerX, centerY);
+            }
+            
+            // تحديث العدد
             const newCount = currentCount + 1;
             currentCount = newCount;
             saveCount(currentCount);
             updateDisplay();
             
-            // التحقق من إكمال ربع (25,50,75,100)
-            handleQuarterCompletion(currentCount);
+            // التحقق من إكمال ربع (25،50،75،100)
+            let quarterCompleted = false;
+            if (currentCount === 25 && lastQuarterNotified !== 1) {
+                lastQuarterNotified = 1;
+                quarterCompleted = true;
+                vibrateQuarter(100);
+                applyQuarterGlow();
+                showNotification(`✨ أكملت ٢٥ تسبيحة ✨`, "بارك الله فيك، أتم الربع الأول");
+            } else if (currentCount === 50 && lastQuarterNotified !== 2) {
+                lastQuarterNotified = 2;
+                quarterCompleted = true;
+                vibrateQuarter(100);
+                applyQuarterGlow();
+                showNotification(`✨ أكملت ٥٠ تسبيحة ✨`, "نصف الطريق إلى المئة، ثبّتك الله");
+            } else if (currentCount === 75 && lastQuarterNotified !== 3) {
+                lastQuarterNotified = 3;
+                quarterCompleted = true;
+                vibrateQuarter(110);
+                applyQuarterGlow();
+                showNotification(`✨ أكملت ٧٥ تسبيحة ✨`, "اقتربت من المئة، أجر عظيم");
+            } else if (currentCount === 100 && lastQuarterNotified !== 4) {
+                lastQuarterNotified = 4;
+                quarterCompleted = true;
+                vibrateQuarter(130);
+                applyQuarterGlow();
+                showNotification(`🌿 هنيئاً لك 🌿`, "أتممت 100 تسبيحة: سبحان الله وبحمده، غفر الله ذنوبك");
+            }
             
-            // التحقق من الهدف العام (100)
-            checkFullGoalCompletion();
+            // فحص الهدف الكامل 100 إذا لم يتم من قبل
+            if (currentCount >= 100 && !fullGoalNotified) {
+                fullGoalNotified = true;
+                if (lastQuarterNotified !== 4) {
+                    vibrateQuarter(130);
+                    applyQuarterGlow();
+                    showNotification("🌿 الحمد لله 🌿", "أتممت 100 تسبيحة، غفر الله ذنوبك وإن كانت مثل زبد البحر.");
+                }
+            } else if (currentCount < 100) {
+                fullGoalNotified = false;
+            }
             
-            // تأثير ضغط بصري
-            const btn = dhikrButton;
-            btn.style.transform = "scale(0.96)";
-            setTimeout(() => { btn.style.transform = ""; }, 100);
+            // تأثير فوري للضغط على المنطقة (إحساس بالاستجابة)
+            tapZone.style.transform = "scale(0.99)";
+            setTimeout(() => { tapZone.style.transform = ""; }, 90);
         }
         
-        // إعادة ضبط العدد إلى صفر مع تأكيد
+        // عرض إشعارات المتصفح بطريقة لائقة
+        let notifRequested = false;
+        function showNotification(title, body) {
+            if (Notification.permission === "granted") {
+                new Notification(title, { body, silent: false });
+            } else if (Notification.permission !== "denied" && !notifRequested) {
+                Notification.requestPermission().then(perm => {
+                    if (perm === "granted") {
+                        new Notification(title, { body });
+                    }
+                });
+                notifRequested = true;
+            }
+        }
+        
+        // طلب الإذن بلطف عند وصول المستخدم لـ20 تسبيحة
+        function gentleNotificationRequest() {
+            if (!notifRequested && Notification && Notification.permission === "default") {
+                if (currentCount >= 20) {
+                    Notification.requestPermission();
+                    notifRequested = true;
+                }
+            }
+        }
+        
+        // إعادة الضبط
         function resetCounter() {
             if (currentCount !== 0) {
                 const confirmReset = confirm("هل تريد إعادة ضبط عدد التسبيحات لليوم؟ سيبدأ العد من الصفر.");
@@ -601,91 +676,60 @@
             updateDisplay();
             lastQuarterNotified = -1;
             fullGoalNotified = false;
-            // رجة عند إعادة الضبط خفيفة
             if (window.navigator && window.navigator.vibrate) {
                 window.navigator.vibrate(40);
             }
-            const goalDiv = document.querySelector('.goal-badge');
-            goalDiv.style.backgroundColor = "#f3e1bc";
-            setTimeout(() => { goalDiv.style.backgroundColor = ""; }, 400);
-            applyQuarterFlash(); // تأثير وميض بسيط
+            // وميض بسيط بالمنطقة
+            tapZone.classList.add('quarter-glow');
+            setTimeout(() => tapZone.classList.remove('quarter-glow'), 300);
+            
+            // عرض رسالة عائمة مؤقتة في المنتصف
+            const rect = tapZone.getBoundingClientRect();
+            createFloatingDhikr(rect.left + rect.width/2, rect.top + rect.height/2);
         }
         
-        // طلب إذن الإشعارات بشكل غير مزعج عند وصول المستخدم إلى 30 تسبيحة
-        let notifRequested = false;
-        function gentleNotificationRequest() {
-            if (!notifRequested && Notification && Notification.permission === "default") {
-                if (currentCount >= 30) {
-                    Notification.requestPermission();
-                    notifRequested = true;
-                }
-            }
-        }
-        
-        // ربط الأحداث مع مراقبة الإشعارات
-        const enhancedIncrement = function() {
-            incrementCount();
+        // ربط الأحداث: أي ضغطة على المنطقة الوسطى (لمس أو ماوس) تعمل تسبيحة
+        tapZone.addEventListener('click', (e) => {
+            e.preventDefault();
+            handleTap(e);
             gentleNotificationRequest();
-        };
+        });
         
-        const enhancedReset = function() {
-            resetCounter();
-        };
+        touchZoneEvents(tapZone, handleTap);
         
-        dhikrButton.addEventListener('click', enhancedIncrement);
-        resetBtn.addEventListener('click', enhancedReset);
+        // دالة مساعدة لدعم اللمس بشكل كامل ومنع default
+        function touchZoneEvents(element, callback) {
+            element.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                const touch = e.touches[0];
+                const fakeEvent = { clientX: touch.clientX, clientY: touch.clientY, touches: e.touches };
+                callback(fakeEvent);
+                gentleNotificationRequest();
+            }, { passive: false });
+        }
         
-        // منع أي zoom إضافي عبر الأحداث على الزر نفسه (لأن الزر قد يكون سبب zoom في بعض المتصفحات)
-        dhikrButton.addEventListener('dblclick', (e) => {
+        // منع النقر المزدوج على المنطقة من التسبب بأي zoom
+        tapZone.addEventListener('dblclick', (e) => {
             e.preventDefault();
             e.stopPropagation();
-            return false;
         });
         
-        document.querySelectorAll('button, .counter-btn, .ctrl-btn').forEach(btn => {
-            btn.addEventListener('dblclick', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-            });
-        });
+        resetBtn.addEventListener('click', resetCounter);
         
-        // تحميل البيانات عند بدء التشغيل
+        // تحميل العدد عند بدء التشغيل
         loadCount();
         
-        // مزامنة الحالة بعد التحميل نهائياً
-        function syncStateAfterLoad() {
-            if (currentCount >= 100) {
-                lastQuarterNotified = 4;
-                fullGoalNotified = true;
-            } else if (currentCount >= 75) {
-                lastQuarterNotified = 3;
-            } else if (currentCount >= 50) {
-                lastQuarterNotified = 2;
-            } else if (currentCount >= 25) {
-                lastQuarterNotified = 1;
-            } else {
-                lastQuarterNotified = -1;
-            }
-            if (currentCount === 100) fullGoalNotified = true;
-            else fullGoalNotified = false;
+        // التأكد من تحديث الحالة بعد التحميل
+        function finalSync() {
+            if (currentCount >= 100) fullGoalNotified = true;
+            if (currentCount === 100) lastQuarterNotified = 4;
+            else if (currentCount > 75) lastQuarterNotified = 3;
+            else if (currentCount > 50) lastQuarterNotified = 2;
+            else if (currentCount > 25) lastQuarterNotified = 1;
         }
-        syncStateAfterLoad();
+        finalSync();
         
-        // حل إضافي لمنع الزوم عند النقر المزدوج على العناصر القابلة للنقر (للهواتف)
-        window.addEventListener('touchstart', (e) => {
-            if (e.touches.length > 1) e.preventDefault();
-        }, { passive: false });
-        
-        let lastClickTime = 0;
-        document.addEventListener('click', function(e) {
-            // منع التكرار السريع المسبب للـ zoom المحتمل
-            const now = Date.now();
-            if (now - lastClickTime < 300 && e.target === dhikrButton) {
-                // لا نمنع الإجراء، فقط نضمن عدم zoom
-                e.preventDefault();
-            }
-            lastClickTime = now;
-        });
+        // إضافة تأثيرات إضافية: إذا كان العدد صفراً نص ترحيبي بسيط
     })();
 </script>
 </body>
