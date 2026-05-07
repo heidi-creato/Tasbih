@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>تسبيح - سبحان الله وبحمده | عدّ بالضغط على المنتصف فقط</title>
+    <title>تسبيح - سبحان الله وبحمده | اضغط بأي مكان بالمنتصف</title>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Font Awesome 6 -->
@@ -25,7 +25,6 @@
             justify-content: center;
             align-items: center;
             padding: 20px;
-            position: relative;
             cursor: default;
         }
 
@@ -37,11 +36,7 @@
             border-radius: 64px 48px 64px 48px;
             box-shadow: 0 35px 50px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(255, 245, 200, 0.5) inset;
             overflow: hidden;
-            transition: transform 0.2s ease;
             backdrop-filter: blur(1px);
-            position: relative;
-            z-index: 10;
-            pointer-events: auto; /* البطاقة تلتقط الأحداث */
         }
 
         /* الرأس */
@@ -81,30 +76,31 @@
             line-height: 1.4;
         }
 
-        /* المنطقة الوسطى القابلة للنقر (مكان العداد) */
+        /* المنطقة الوسطى بالكامل - اضغط بأي مكان فيها يحسب التسبيحة */
         .middle-tap-area {
             background: #fffbf2;
-            padding: 40px 20px 50px;
+            padding: 50px 20px 55px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             position: relative;
-            min-height: 380px;
+            min-height: 400px;
             transition: background 0.08s ease;
             box-shadow: inset 0 0 0 1px rgba(255,245,200,0.6);
+            width: 100%;
         }
         
         .middle-tap-area:active {
             background: #fcf5e6;
-            transform: scale(0.99);
         }
 
         /* حاوية العدد الكبير */
         .counter-container {
             text-align: center;
             margin-bottom: 20px;
+            pointer-events: none; /* لضمان أن النقر يمر إلى المنطقة الأم */
         }
 
         .count-number {
@@ -145,6 +141,7 @@
             align-items: center;
             gap: 8px;
             font-weight: 500;
+            pointer-events: none;
         }
 
         /* حركة النصوص العائمة (fade out) */
@@ -345,6 +342,10 @@
             .tap-hint {
                 font-size: 0.8rem;
             }
+            .middle-tap-area {
+                min-height: 320px;
+                padding: 40px 15px;
+            }
         }
         
         /* تأثير وميض عند اكتمال الربع */
@@ -358,9 +359,10 @@
             100% { background: #fffbf2; }
         }
         
-        /* منع أي تأثير خارج المنطقة */
-        body > *:not(.floating-dhikr) {
-            cursor: default;
+        /* تأثير ضغط سريع */
+        .press-effect {
+            transform: scale(0.99);
+            transition: transform 0.06s;
         }
     </style>
 </head>
@@ -378,7 +380,7 @@
         </div>
     </div>
 
-    <!-- المنطقة الوسطى فقط هي التي تحسب التسبيحة (المكان الذي به العدد) -->
+    <!-- المنطقة الوسطى بالكامل - اضغط بأي مكان فيها يحسب التسبيحة -->
     <div id="tapZone" class="middle-tap-area">
         <div class="counter-container">
             <div class="count-number" id="countDisplay">0</div>
@@ -387,7 +389,7 @@
             </div>
         </div>
         <div class="tap-hint">
-            <i class="fas fa-hand-peace fa-flip-horizontal"></i> اضغط هنا للتسبيح
+            <i class="fas fa-hand-peace fa-flip-horizontal"></i> اضغط بأي مكان في هذه المنطقة للتسبيح
             <i class="fas fa-arrow-down"></i>
         </div>
     </div>
@@ -465,20 +467,18 @@
         }, { passive: false });
         
         // ================== منطق التسبيح ==================
-        // عناصر DOM
         const countDisplay = document.getElementById('countDisplay');
-        const tapZone = document.getElementById('tapZone');  // المنطقة الوسطى فقط هي التي تحسب
+        const tapZone = document.getElementById('tapZone');  // المنطقة الوسطى بالكامل
         const resetBtn = document.getElementById('resetBtn');
         
         // مفاتيح التخزين المحلي
-        const STORAGE_KEY = 'tasbeeh_count_center_v5';
-        const LAST_DATE_KEY = 'tasbeeh_last_date_center_v5';
+        const STORAGE_KEY = 'tasbeeh_count_center_v6';
+        const LAST_DATE_KEY = 'tasbeeh_last_date_center_v6';
         
         let currentCount = 0;
-        let lastQuarterNotified = -1;   // 1,2,3,4
+        let lastQuarterNotified = -1;
         let fullGoalNotified = false;
         
-        // الحصول على تاريخ اليوم
         function getTodayDate() {
             const today = new Date();
             const year = today.getFullYear();
@@ -522,21 +522,19 @@
             countDisplay.innerText = currentCount;
         }
         
-        // رجة خفيفة جداً مع كل نقرة
+        // رجة خفيفة مع كل نقرة
         function vibrateOnTap() {
             if (window.navigator && window.navigator.vibrate) {
                 window.navigator.vibrate(10);
             }
         }
         
-        // رجة أقوى لإكمال الربع
         function vibrateQuarter(duration = 80) {
             if (window.navigator && window.navigator.vibrate) {
                 window.navigator.vibrate(duration);
             }
         }
         
-        // تأثير وميض المنطقة عند إكمال ربع
         function applyQuarterGlow() {
             tapZone.classList.add('quarter-glow');
             setTimeout(() => {
@@ -544,7 +542,7 @@
             }, 400);
         }
         
-        // حركة ظهور النص (Motion fade out) "سبحان الله وبحمده"
+        // حركة ظهور النص "سبحان الله وبحمده"
         function createFloatingDhikr(x, y) {
             const dhikrText = document.createElement('div');
             dhikrText.className = 'floating-dhikr';
@@ -553,52 +551,58 @@
             dhikrText.style.top = y + 'px';
             document.body.appendChild(dhikrText);
             setTimeout(() => {
-                dhikrText.remove();
+                if (dhikrText && dhikrText.remove) dhikrText.remove();
             }, 800);
         }
         
-        // معالجة الضغط على المنطقة الوسطى فقط
+        // معالجة الضغط على المنطقة الوسطى (أي مكان فيها)
         function handleTap(e) {
+            // منع الحدث الافتراضي والتكرار
             e.preventDefault();
             e.stopPropagation();
             
-            // زيادة العدد
             if (currentCount >= 5000) {
                 alert("🌹 سبحان الله العظيم، يمكنك إعادة الضبط لمتابعة الذكر.");
                 return;
             }
             
-            // 1. رجة خفيفة لكل نقرة
+            // رجة خفيفة
             vibrateOnTap();
             
-            // 2. الحصول على إحداثيات النقر لعرض النص العائم
+            // الحصول على إحداثيات النقر
             let clientX, clientY;
             if (e.touches) {
                 const touch = e.touches[0];
-                clientX = touch.clientX;
-                clientY = touch.clientY;
+                if (touch) {
+                    clientX = touch.clientX;
+                    clientY = touch.clientY;
+                }
             } else {
                 clientX = e.clientX;
                 clientY = e.clientY;
             }
             
-            // عرض نص "سبحان الله وبحمده" مع حركة fade out
+            // عرض النص العائم
             if (clientX !== undefined && clientY !== undefined) {
                 createFloatingDhikr(clientX, clientY);
             } else {
                 const rect = tapZone.getBoundingClientRect();
-                const centerX = rect.left + rect.width / 2;
-                const centerY = rect.top + rect.height / 2;
-                createFloatingDhikr(centerX, centerY);
+                createFloatingDhikr(rect.left + rect.width/2, rect.top + rect.height/2);
             }
             
-            // تحديث العدد
+            // زيادة العدد
             const newCount = currentCount + 1;
             currentCount = newCount;
             saveCount(currentCount);
             updateDisplay();
             
-            // التحقق من إكمال ربع (25،50،75،100)
+            // تأثير الضغط البصري
+            tapZone.classList.add('press-effect');
+            setTimeout(() => {
+                tapZone.classList.remove('press-effect');
+            }, 100);
+            
+            // التحقق من إكمال ربع
             if (currentCount === 25 && lastQuarterNotified !== 1) {
                 lastQuarterNotified = 1;
                 vibrateQuarter(100);
@@ -621,7 +625,7 @@
                 showNotification(`🌿 هنيئاً لك 🌿`, "أتممت 100 تسبيحة: سبحان الله وبحمده، غفر الله ذنوبك");
             }
             
-            // فحص الهدف الكامل 100 إذا لم يتم من قبل
+            // فحص الهدف الكامل
             if (currentCount >= 100 && !fullGoalNotified) {
                 fullGoalNotified = true;
                 if (lastQuarterNotified !== 4) {
@@ -632,13 +636,8 @@
             } else if (currentCount < 100) {
                 fullGoalNotified = false;
             }
-            
-            // تأثير الضغط على المنطقة
-            tapZone.style.transform = "scale(0.99)";
-            setTimeout(() => { tapZone.style.transform = ""; }, 90);
         }
         
-        // عرض إشعارات المتصفح
         let notifRequested = false;
         function showNotification(title, body) {
             if (Notification.permission === "granted") {
@@ -653,7 +652,6 @@
             }
         }
         
-        // طلب الإذن بلطف عند وصول المستخدم لـ20 تسبيحة
         function gentleNotificationRequest() {
             if (!notifRequested && Notification && Notification.permission === "default") {
                 if (currentCount >= 20) {
@@ -663,7 +661,6 @@
             }
         }
         
-        // إعادة الضبط
         function resetCounter() {
             if (currentCount !== 0) {
                 const confirmReset = confirm("هل تريد إعادة ضبط عدد التسبيحات لليوم؟ سيبدأ العد من الصفر.");
@@ -680,31 +677,12 @@
             tapZone.classList.add('quarter-glow');
             setTimeout(() => tapZone.classList.remove('quarter-glow'), 300);
             
-            // عرض نص عائم في منتصف المنطقة عند إعادة الضبط
             const rect = tapZone.getBoundingClientRect();
             createFloatingDhikr(rect.left + rect.width/2, rect.top + rect.height/2);
         }
         
-        // ================== ربط الأحداث: المنطقة الوسطى فقط هي التي تستجيب ==================
-        // منع أي نقرة خارج المنطقة الوسطى من عمل أي شيء
-        document.body.addEventListener('click', function(e) {
-            // إذا كان الهدف ليس داخل tapZone ولم يكن زر إعادة الضبط
-            if (!tapZone.contains(e.target) && e.target !== resetBtn && !resetBtn.contains(e.target)) {
-                e.preventDefault();
-                e.stopPropagation();
-                return false;
-            }
-        }, true);
-        
-        document.body.addEventListener('touchstart', function(e) {
-            if (!tapZone.contains(e.target) && e.target !== resetBtn && !resetBtn.contains(e.target)) {
-                e.preventDefault();
-                e.stopPropagation();
-                return false;
-            }
-        }, { passive: false, capture: true });
-        
-        // ربط حدث النقر على المنطقة الوسطى
+        // ================== ربط الأحداث: المنطقة الوسطى بالكامل تستجيب ==================
+        // أحداث الفأرة
         tapZone.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
@@ -712,22 +690,25 @@
             gentleNotificationRequest();
         });
         
+        // أحداث اللمس للهواتف
         tapZone.addEventListener('touchstart', (e) => {
             e.preventDefault();
             e.stopPropagation();
             const touch = e.touches[0];
-            const fakeEvent = { clientX: touch.clientX, clientY: touch.clientY, touches: e.touches };
-            handleTap(fakeEvent);
-            gentleNotificationRequest();
+            if (touch) {
+                const fakeEvent = { clientX: touch.clientX, clientY: touch.clientY, touches: e.touches };
+                handleTap(fakeEvent);
+                gentleNotificationRequest();
+            }
         }, { passive: false });
         
-        // منع النقر المزدوج على المنطقة من التسبب بأي zoom
+        // منع النقر المزدوج على المنطقة
         tapZone.addEventListener('dblclick', (e) => {
             e.preventDefault();
             e.stopPropagation();
         });
         
-        // زر إعادة الضبط يعمل بشكل طبيعي
+        // زر إعادة الضبط
         resetBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             resetCounter();
@@ -735,12 +716,20 @@
         
         resetBtn.addEventListener('touchstart', (e) => {
             e.stopPropagation();
-        }, { passive: false });
+        });
         
-        // تحميل العدد عند بدء التشغيل
+        // منع أي نقرة خارج المنطقة من التأثير (اختياري)
+        document.body.addEventListener('click', function(e) {
+            if (!tapZone.contains(e.target) && e.target !== resetBtn && !resetBtn.contains(e.target)) {
+                // لا نفعل شيئًا، فقط نمنع أي تأثير جانبي
+                e.preventDefault();
+            }
+        }, true);
+        
+        // تحميل البيانات
         loadCount();
         
-        // التأكد من الحالة
+        // مزامنة الحالة
         function finalSync() {
             if (currentCount >= 100) fullGoalNotified = true;
             if (currentCount === 100) lastQuarterNotified = 4;
